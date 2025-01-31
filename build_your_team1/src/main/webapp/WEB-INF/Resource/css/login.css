@@ -1,0 +1,45 @@
+.container-fluid {
+    background-color: #e2f4f5 !important;
+    height: 100vh;
+}
+
+.input {
+    border: none;
+    outline: none;
+    border-bottom: 1px solid black;
+    width: 100%;
+    max-width: 300px;
+}
+
+.row {
+    background-color: #fff;
+    border-radius: 25px;
+}
+
+.icons:hover {
+    transition: transform 0.4s ease-out;
+    transform: scale(1.4);
+    cursor: pointer;
+}
+
+/* Responsive Styles */
+@media (max-width: 770px) {
+    .row {
+        flex-direction: column-reverse;
+        padding: 20px;
+    }
+
+    .col-md-6, .col-md-4 {
+        margin-top: 20px;
+    }
+
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Adjust container height for smaller screens */
+    .container-fluid {
+        height: auto;
+    }
+}

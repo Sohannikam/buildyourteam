@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd
+     http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	
+	<tx:annotation-driven/>
+	<context:component-scan base-package="buildteam"/>
+	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" name="viewResolver">
+		<property name="prefix" value="/WEB-INF/view/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	
+     	<bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" name="ds">
+		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://localhost:3306/teams"/>
+		<property name="username" value="root"/>
+		<property name="password" value="Pass@123"/>
+	</bean>
+	
+	<bean class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" name="factory">
+		
+		<property name="dataSource" ref="ds"></property>
+		
+		<!-- hibernate properties -->
+		<property name="hibernateProperties">
+			<props><prop key="hibernate.dialect">org.hibernate.dialect.MySQL57Dialect</prop>
+					<prop key="hibernate.show_sql">true</prop>
+					<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+			
+		</property>
+		
+		<!-- annotated classes -->
+		 <property name="annotatedClasses">
+		
+			 <list>
+				<value>buildteam.Model.Users</value>
+			</list> </property>
+	</bean>
+	
+	<bean class="org.springframework.orm.hibernate5.HibernateTemplate" name="hibernateTemplate">
+		<property name="sessionFactory" ref="factory"></property>
+	</bean>
+	
+	<bean class="org.springframework.orm.hibernate5.HibernateTransactionManager" name="transactionManager">
+			<property name="sessionFactory" ref="factory"></property>
+	</bean> 
+	
+	<mvc:annotation-driven/>
+    	
+    	<mvc:resources location="/WEB-INF/Resource/" mapping="/Resource/**"/>
+    	
+    	
+	<!-- configuring multpart resolver -->
+	<bean name="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	<!-- <property name="maxUploadSize" value="100000"></property> -->
+	</bean>
+</beans>
