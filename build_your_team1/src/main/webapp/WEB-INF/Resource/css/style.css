@@ -1,0 +1,168 @@
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+ 
+    background: #f2f2f2; /* Soft grey for eye comfort */
+    color: #333; /* Darker text for better readability */
+    display: flex;
+    flex-direction: column;
+    /* padding-top: 70px; To account for the fixed navbar height */
+    height: auto; /* Auto height allows content to expand */
+    min-height: 100vh; /* Ensures full page height */
+   /* box-sizing: border-box;  Includes the border in the element's total width/height */
+    /*border: 6px solid #343a40;  Add border here */
+    margin: 0;
+
+}
+
+main {
+    flex-grow: 1;
+    padding-top: 5px; /* Reduced padding for smaller space between header and content */
+      
+}
+
+
+
+/* Fixed Header Styles */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Keeps header on top */
+    background-color: #343a40;
+    padding: 0px 0; /* Adjust padding as needed */
+    
+}
+
+.footer-content, .navbar {
+    background-color: #343a40;
+    color: white;
+    width: 100%;
+}
+
+.footer-content {
+    padding: -4px 0;
+    text-align: center;
+    position: relative;
+    bottom: 0;
+}
+
+.footer-content a {
+  color: #f8c146;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.footer-content a:hover {
+    color: #fff;
+}
+
+.navbar {
+    padding-bottom: 15px;
+   /* position: fixed;*/
+
+}
+
+.navbar-nav {
+    display: flex;
+    justify-content: space-between; /* Distribute space evenly */
+    width: 100%; /* Ensure it spans the full width of the navbar */
+}
+
+.navbar-nav .nav-link {
+    color: black !important;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+.navbar-nav .nav-link:hover {
+    color: white !important;
+}
+
+/* White box for navbar */
+.nav-box {
+    background: #d6d6d6; /* Darker grey background */
+    ; 
+    padding: 15px; /* Space inside */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    
+}
+
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out;
+    background: #fff;
+    width: 90%;
+    max-width: 1200px;
+    padding: 20px;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .navbar-nav {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .navbar-nav .nav-item {
+        margin-bottom: 10px;
+    }
+
+    .card {
+        width: 95%; /* Slightly reduce width for smaller screens */
+    }
+
+}
+
+@media (max-width: 268px) {
+    .main-content {
+        max-height: 300px; /* Smaller height for smaller screens */
+        
+    }
+} 
+
+/* Make sure it stays responsive */
+@media (max-width: 991px) {
+    .nav-box {
+        flex-direction: column;
+        text-align: center;
+        padding: 10px;
+    }
+
+    .nav-item {
+        margin: 5px 0; /* Reduce spacing in small screens */
+    }
+}
+
+
+
+

@@ -35,12 +35,21 @@
 			<div class="container inner-container">
 				<div class="row d-flex justify-content-center">
 					<div class="col-md-6">
-
-						<!-- Display success message -->
+					
+					<!-- Display email exists message -->
 						<c:if test="${not empty message}">
 							<script>
 								window.onload = function() {
 									alert("${message}");
+								};
+							</script>
+						</c:if>
+
+						<!-- Display success message -->
+						<c:if test="${not empty message1}">
+							<script>
+								window.onload = function() {
+									alert("${message1}");
 								};
 							</script>
 						</c:if>

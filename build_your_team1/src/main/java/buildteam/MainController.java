@@ -26,35 +26,44 @@ public class MainController {
 public String Home()
 {
 	System.out.println("inside Signup");
+	return "Dashboard"; 
+}
+@RequestMapping("/profile")
+
+public String profile()
+{
+	System.out.println("inside Profile");
+	return "profile"; 
+}
+@RequestMapping("/findpart")
+
+public String findpart()
+{
+	System.out.println("inside Signup");
+	return "Findyourpartner"; 
+}
+@RequestMapping("/Home")
+
+public String Home1()
+{
+	System.out.println("inside Signup");
 	return "Home"; 
 }
-//@RequestMapping("/Signup")
-//
-//public String Signup()
-//{
-//	System.out.println("inside Signup");
-//	return "Signup"; 
-//}
-//@RequestMapping("/Signup")
-//
-//public String Signup()
-//{
-//	System.out.println("inside Signup");
-//	return "Signup"; 
-//}
-//@RequestMapping("/Signup")
-//
-//public String Signup()
-//{
-//	System.out.println("inside Signup");
-//	return "Signup"; 
-//}
-//@RequestMapping("/Signup")
-//
-//public String Signup()
-//{
-//	System.out.println("inside Signup");
-//	return "Signup"; 
-//}
+@RequestMapping("/Mynet")
+
+public String Mynetork()
+{
+	System.out.println("inside Signup");
+	return "MyNetwork"; 
+}
+
+@RequestMapping("/ADDPOST")
+
+public String AddPost()
+{
+	System.out.println("inside Signup");
+	return "AddPost"; 
+}
+
 
 }

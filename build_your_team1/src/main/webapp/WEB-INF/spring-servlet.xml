@@ -47,6 +47,12 @@
 		
 			 <list>
 				<value>buildteam.Model.Users</value>
+				<value>buildteam.Model.Profile</value>
+				<value>buildteam.Model.Skill</value>
+				<value>buildteam.Model.Project</value>
+				<value>buildteam.Model.Certification</value>
+				<value>buildteam.Model.Education</value>
+				<value>buildteam.Model.Request</value>
 			</list> </property>
 	</bean>
 	
@@ -61,6 +67,8 @@
 	<mvc:annotation-driven/>
     	
     	<mvc:resources location="/WEB-INF/Resource/" mapping="/Resource/**"/>
+    	
+    	
     	
     	
 	<!-- configuring multpart resolver -->

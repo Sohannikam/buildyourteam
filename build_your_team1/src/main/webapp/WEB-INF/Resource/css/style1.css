@@ -1,0 +1,418 @@
+
+/* Navbar Customizations */
+.navbar-brand {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: #ffffff !important;
+    /* font-size: 1.5rem; */
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.navbar-brand span {
+    margin-top: 5px; /* Adds space between the logo and the text */
+    font-size: 0.8 rem; /* Adjust font size for text */
+    font-weight: bold;
+    color: #FFD700; /* Golden color */
+    text-shadow: 0 0 5px rgba(255, 223, 0, 0.8), 0 0 10px rgba(255, 223, 0, 0.6), 0 0 15px rgba(255, 223, 0, 0.4); /* Shine effect */
+}
+
+.logo {
+    width: 80px; /* Adjust logo size */
+    height: 80px;
+    border-radius: 50%; /* Optional: Rounded logo */
+    object-fit: cover; /* Ensure proper fit */
+  /* margin-top: -21px;
+  margin-bottom: -23px;*/
+}
+
+.back-btn {
+    position: absolute;
+    top: 121px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+     transition: all 0.3s ease-in-out;
+}
+
+.back-btn:hover {
+    background-color: #0056b3;
+}
+
+
+/*profile section css starts from here*/
+
+/* Profile Container */
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+    margin-bottom: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 100px;
+}
+
+/* Profile Header (Aligns Image + User Info in One Line) */
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Ensures space between items */
+    width: 100%;
+    gap: 30px;
+    flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    padding: 10px 20px;
+}
+
+/* Profile Image */
+.profile-image {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    cursor: pointer; /* Makes it clear that the image is clickable */
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-image img {
+    width: 104px;
+    height: 121px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+    align-content: center;
+}
+
+/* Image Upload */
+#upload-photo {
+    display: none;
+}
+
+/* Custom Upload Button */
+.upload-label {
+    display: block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 15px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.upload-label:hover {
+    background-color: #45a049;
+}
+
+/* User Info */
+.user-info {
+     flex-grow: 1;
+    min-width: 200px; /* Ensures user info doesn't shrink too much */
+    text-align: left; /* Keeps text aligned properly */
+    
+}
+
+.user-info h2 {
+    margin-bottom: 5px;
+    color: #0073b1;
+}
+
+.user-info p {
+    margin: 2px 0;
+    color: #555;
+}
+
+/* Profile Sections */
+.profile-sections {
+     display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 51px;
+}
+
+.section {
+    background: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.section h3 {
+    margin-bottom: 5px;
+}
+
+.add-btn {
+    background: #0073b1;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.add-btn:hover {
+    background: #005b8e;
+}
+
+.logout-btn {
+    position: relative;
+    top: 0px;
+    left: 10px;
+    background-color: #ff4d4d; /* Red color for logout */
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.logout-btn:hover {
+    background-color: #cc0000;
+}
+
+
+/*@media (max-width: 1250px)
+{
+	.back-btn{
+		margin-top: 25px;
+    margin-right: -16px;
+	}
+	.profile-container{
+		margin-top: 117px;
+    
+	}
+	.edit-icon{
+		
+	}
+	
+}
+
+@media (max-width:1000px){
+	.edit-icon{
+		
+	}
+	.logout-btn{
+		
+	}
+}
+ Responsive Design 
+@media (max-width: 900px) {
+	
+	 .logout-btn {
+        top: -20px;  Slightly adjusted for tablets 
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+    .profile-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-top: 20px;
+        
+    }
+    
+.logo {
+        width: 30px;
+        height: 30px;
+    }
+    
+.profile-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        text-align: center;
+    }
+    .profile-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .profile-sections {
+        width: 100%;
+        margin-top: -33px;
+    }
+    
+    .user-info {
+        text-align: center;
+        min-width: auto;
+    }
+    
+     .back-btn {
+        position: relative;  Allow it to flow with the content 
+        top: auto;
+        right: auto;
+        display: block;  Make it full width 
+        width: 50%;  Take most of the screen width 
+        margin: 10px auto;  Center it 
+        text-align: center;
+        margin-top: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logout-btn {
+      top: -205px;
+    padding: 6px 12px;
+    font-size: 12px;
+    left: 142px;
+    }
+    
+    @media (max-width: 600px) {
+    .profile-image {
+        width: 80px;  Reduce size on smaller screens 
+        height: 80px;
+    }  
+}
+}
+*/
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    
+    .edit-icon {
+		position: absolute;
+    right: 112px;
+    left: auto;
+    bottom: auto;
+    top: 43px;
+	}
+	
+    /* Profile Container */
+    .profile-container {
+        padding: 10px;
+        width: 90%;
+        position: relative;
+    }
+
+    /* Profile Header */
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-image {
+        width: 100px;
+        height: 100px;
+    }
+
+    .profile-image img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .user-info h2 {
+        font-size: 20px;
+    }
+
+    .user-info p {
+        font-size: 14px;
+    }
+
+    /* Profile Sections */
+    .profile-sections {
+       
+        width: 100%;
+        margin-top: 0px;
+    }
+
+    .section {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+
+    /* Buttons */
+     .logout-btn {
+        width: 20%;
+    padding: 8px;
+    font-size: 14px;
+    position: absolute;
+    top: 20px;
+    }
+
+    /* Modal Adjustments */
+    .modal {
+        width: 90%;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .modal-content {
+        padding: 15px;
+    }
+
+    /* Adjust input fields */
+    .modal-content input, .modal-content select {
+        width: 100%;
+        font-size: 14px;
+        padding: 6px;
+    }
+
+    .save-btn {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* Back Button */
+    .back-btn {
+        
+        right: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+        z-index: 1;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .profile-container {
+        width: 95%;
+    }
+
+    .profile-header {
+        gap: 10px;
+    }
+
+    .profile-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .profile-image img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .user-info h2 {
+        font-size: 18px;
+    }
+
+    .user-info p {
+        font-size: 12px;
+    }
+
+    .modal {
+        width: 95%;
+    }
+}
+
+
+
