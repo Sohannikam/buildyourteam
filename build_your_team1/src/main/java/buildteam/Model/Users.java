@@ -2,9 +2,11 @@ package buildteam.Model;
 
 import java.util.List;
 
+
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 
 @Entity
@@ -23,17 +25,52 @@ public class Users {
 	private String State;
 	private String City;
 	
-	@OneToMany(mappedBy = "sender")
+	@OneToMany(mappedBy = "sender" , cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private List<Request> sentRequests;
 
-	@OneToMany(mappedBy = "receiver")
+	@OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
-private List<Request> receivedRequests;
+    private List<Request> receivedRequests;
 
+	 @OneToMany(mappedBy = "Msender", cascade = CascadeType.ALL, orphanRemoval = true)
+	    private List<Message> messagesender;
+	 
+	 @OneToMany(mappedBy = "Mreceiver" , cascade = CascadeType.ALL, orphanRemoval = true)
+	    private List<Message> messageReciever;
+	 
+	 
 	
 	
-	  public List<Request> getSentRequests() {
+	  public List<Message> getMessagesender() {
+		return messagesender;
+	}
+
+
+
+
+	public void setMessagesender(List<Message> messagesender) {
+		this.messagesender = messagesender;
+	}
+
+
+
+
+	public List<Message> getMessageReciever() {
+		return messageReciever;
+	}
+
+
+
+
+	public void setMessageReciever(List<Message> messageReciever) {
+		this.messageReciever = messageReciever;
+	}
+
+
+
+
+	public List<Request> getSentRequests() {
 		return sentRequests;
 	}
 
@@ -57,7 +94,7 @@ private List<Request> receivedRequests;
 	public void setReceivedRequests(List<Request> receivedRequests) {
 		this.receivedRequests = receivedRequests;
 	}
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL) // "user" refers to the field in Profile  = mappedBy = "user" → Tells Hibernate that the relationship is already mapped by the user field in Profile, avoiding an extra column.
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL , orphanRemoval = true) // "user" refers to the field in Profile  = mappedBy = "user" → Tells Hibernate that the relationship is already mapped by the user field in Profile, avoiding an extra column.
 	    private Profile profile;
 	
 
@@ -67,27 +104,6 @@ private List<Request> receivedRequests;
 		return "Users [id=" + id + ", email=" + email + ", name=" + name + ", pass=" + pass + ", cpass=" + cpass
 				+ ", phone=" + phone + ", gen=" + gen + ", State=" + State + ", City=" + City +"]";
 	}
-
-
-
-
-	public Users(int id, String email, String name, String pass, String cpass, long phone, String gen, String state,
-			String city, List<Request> sentRequests, List<Request> receivedRequests, Profile profile) {
-		super();
-		this.id = id;
-		this.email = email;
-		this.name = name;
-		this.pass = pass;
-		this.cpass = cpass;
-		this.phone = phone;
-		this.gen = gen;
-		State = state;
-		City = city;
-//		this.sentRequests = sentRequests;
-//		this.receivedRequests = receivedRequests;
-		this.profile = profile;
-	}
-
 
 
 
@@ -105,10 +121,6 @@ private List<Request> receivedRequests;
 	}
 	public void setId(int id) {
 		this.id = id;
-	}
-	public Users() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
 	public String getEmail() {
 		return email;
@@ -161,25 +173,32 @@ private List<Request> receivedRequests;
 	}
 
 
-//	public List<Request> getSentRequests() {
-//		return sentRequests;
-//	}
-//
-//
-//	public void setSentRequests(List<Request> sentRequests) {
-//		this.sentRequests = sentRequests;
-//	}
-//
-//
-//	public List<Request> getReceivedRequests() {
-//		return receivedRequests;
-//	}
-//
-//
-//	public void setReceivedRequests(List<Request> receivedRequests) {
-//		this.receivedRequests = receivedRequests;
-//	}
+
+
+	public Users(int id, String email, String name, String pass, String cpass, long phone, String gen, String state,
+			String city, List<Request> sentRequests, List<Request> receivedRequests, List<Message> messagesender,
+			List<Message> messageReciever, Profile profile) {
+		super();
+		this.id = id;
+		this.email = email;
+		this.name = name;
+		this.pass = pass;
+		this.cpass = cpass;
+		this.phone = phone;
+		this.gen = gen;
+		this.State = state;
+		this.City = city;
+		this.sentRequests = sentRequests;
+		this.receivedRequests = receivedRequests;
+		this.messagesender = messagesender;
+		this.messageReciever = messageReciever;
+		this.profile = profile;
+	}
 	
-	
+	public Users() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	
 }

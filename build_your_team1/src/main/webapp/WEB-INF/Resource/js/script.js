@@ -1,7 +1,4 @@
-
-document.addEventListener("DOMContentLoaded", function() {
-
-	const sections = {
+const sections = {
 		profile: { btn: "profile-link", content: "dynamic-content", url: "profile" },
 		findPartner: { btn: "findpartner", content: "findpartner-content", url: "findpart" },
 		myNetwork: { btn: "Mynet", content: "Mynetworkcontent", url: "Mynet" },
@@ -10,7 +7,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	const dashboardContent = document.getElementById("dashboard-content");
 	const footer = document.querySelector(".footer-content");
-
+	
+	
+document.addEventListener("DOMContentLoaded", function() {
+	
 	function hideAllSections() {
 		dashboardContent.style.display = "none";
 		footer.style.display = "none";
@@ -19,70 +19,224 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	}
 
-	function loadContent(sectionKey) {
-		const { btn, content, url } = sections[sectionKey];
-		document.getElementById(btn).addEventListener("click", function(event) {
-			event.preventDefault();
-			hideAllSections();
+	function loadContent(sectionKey, pushToHistory = false) {
+	const { content, url } = sections[sectionKey];
+	hideAllSections();
 
-			fetch(url)
-				.then(response => response.text())
-				.then(data => {
-					const section = document.getElementById(content);
-					section.innerHTML = data;
-					section.style.display = "block";
+	fetch(url)
+		.then(response => response.text())
+		.then(data => {
+			const section = document.getElementById(content);
+			section.innerHTML = data;
+			section.style.display = "block";
 
-					// Attach back-to-dashboard functionality
-					const backButton = document.getElementById("back-to-dashboard");
+			if (pushToHistory) {
+				history.pushState({ sectionKey }, "", `#${sectionKey}`);
+			}
 
-					if (backButton) {
+			// Attach back buttons
+			["back-to-dashboard", "back-to-dashboard-1", "back-to-dashboard-2","back-to-dashboard-6"].forEach(id => {
+				const btn = document.getElementById(id);
+				if (btn) {
+					btn.addEventListener("click", function () {
+						hideAllSections();
+						dashboardContent.style.display = "block";
+						footer.style.display = "block";
+					});
+				}
+			});
 
+			// Section-specific scripts
+			if (sectionKey === "profile") {
+				initializeStateCityDropdown();
+				initialiseSkills();
+			}
+			if (sectionKey === "findPartner") {
+				fetchUsers();
+				populateLocationDropdown();
+			}
+			if (sectionKey === "myNetwork") {
+				initializeNetworkTabs();
+				fetchAcceptedUsersformy();
+			}
+			
+			if (sectionKey === "AddYourPost") {
+				console.log("inside when section key is ADDPOST");
+				CreatPost();
+			}
+		})
+		.catch(error => console.error(`Error loading ${sectionKey} page:`, error));
+}
 
-						backButton.addEventListener("click", function() {
-							console.log("back button touched succesfully")
-							hideAllSections();
-							dashboardContent.style.display = "block";
-							footer.style.display = "block";
-						});
-					}
-					const backButton1 = document.getElementById("back-to-dashboard-1");
-
-					if (backButton1) {
-						backButton1.addEventListener("click", function() {
-							hideAllSections();
-							dashboardContent.style.display = "block";
-							footer.style.display = "block";
-						});
-					}
-
-					const backButton2 = document.getElementById("back-to-dashboard-2");
-
-					if (backButton2) {
-						backButton2.addEventListener("click", function() {
-							hideAllSections();
-							dashboardContent.style.display = "block";
-							footer.style.display = "block";
-						});
-					}
-
-
-					// Call functions for specific sections
-					if (sectionKey === "profile") {
-						initializeStateCityDropdown();
-						initialiseSkills();// ✅ Load skills immediately when profile loads
-
-					}
-					if (sectionKey == "findPartner") {
-						fetchUsers();
-					}
-					if (sectionKey === "myNetwork") initializeNetworkTabs();
-				})
-				.catch(error => console.error(`Error loading ${sectionKey} page:`, error));
-		});
+// 🔙 Enable back/forward browser navigation
+window.addEventListener('popstate', function (event) {
+	const state = event.state;
+	if (state && state.sectionKey) {
+		loadContent(state.sectionKey, false); // Don't push again
+	} else {
+		hideAllSections();
+		dashboardContent.style.display = "block";
+		footer.style.display = "block";
 	}
-
-	Object.keys(sections).forEach(loadContent);
 });
+
+// 🖱️ Attach click handlers to all buttons
+Object.keys(sections).forEach(sectionKey => {
+	const { btn } = sections[sectionKey];
+	document.getElementById(btn).addEventListener("click", function (e) {
+		e.preventDefault();
+		loadContent(sectionKey, true); // true = push to history
+	});
+});
+
+});
+
+
+//Fetch all blogs from the database
+console.log("script called agian");
+
+$(document).ready(function () {
+    console.log("inside of fetch blogs again");
+
+    $.ajax({
+        url: "getAllBlogs",
+        type: "GET",
+        dataType: "json",
+        success: function (blogs) {
+            console.log("blogs accessed successfully");
+            let container = $('#blog-container');
+            container.empty();
+
+            blogs.forEach((blog, index) => {
+                const blogId = `blog-${index}`;
+                const base64BlogImage = blog.image ? `data:image/jpeg;base64,${blog.image}` : '';
+                const profileImage = 'default-avatar.png'; // default image first
+
+                const card = `
+                    <div class="card p-4 mb-3" id="${blogId}">
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="${profileImage}" alt="Profile" class="rounded-circle user-image" width="50" height="50">
+                            <h5 class="ms-3">${blog.user.name}</h5>
+                        </div>
+                        
+                        <h1 class="blog-title">${blog.title}</h1>
+
+                        <div class="blog-body">
+                            ${base64BlogImage ? `<img src="${base64BlogImage}" class="blog-img"/>` : ''}
+                            <div class="blog-desc"><h5>${blog.description}</h5></div>
+                        </div>
+
+                        <p class="text-muted"><small>Posted on: ${new Date(blog.createdDate).toLocaleString()}</small></p>
+                    </div>
+                `;
+
+                container.append(card);
+
+                // Fetch and update user image asynchronously
+                if (blog.user && blog.user.id) {
+                    fetchUserImage(blog.user.id, function (userImage) {
+                        const finalImage = userImage ? `data:image/jpeg;base64,${userImage}` : 'default-avatar.png';
+                        $(`#${blogId} .user-image`).attr("src", finalImage);
+                    });
+                }
+            });
+        },
+        error: function (err) {
+            console.error("Failed to load blogs", err);
+        }
+    });
+});
+
+
+/*
+function loadEmojiButton(callback) {
+    if (window.EmojiButton) {
+        callback();
+        return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/@joeattardi/emoji-button@4.6.4/dist/index.js';
+    script.type='module';
+    script.onload = () => {
+        console.log("✅ EmojiButton loaded dynamically");
+        callback();
+    };
+    script.onerror = () => {
+        console.error("❌ Failed to load EmojiButton script");
+    };
+    document.head.appendChild(script);
+}
+
+// Call it like this
+loadEmojiButton(() => {
+    // use EmojiButton here
+    initEmojiPickers(); // your function that uses new EmojiButton()
+});
+
+	
+function initEmojiPickers() {
+  function setupEmojiPicker(buttonId, inputId) {
+    const button = document.getElementById(buttonId);
+    const input = document.getElementById(inputId);
+    const picker = new EmojiButton({ position: 'top-end' });
+
+    picker.on('emoji', emoji => {
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const text = input.value;
+
+      input.value = text.slice(0, start) + emoji + text.slice(end);
+      input.focus();
+      input.selectionEnd = start + emoji.length;
+    });
+
+    button.addEventListener('click', () => {
+      picker.togglePicker(button);
+    });
+  }
+
+  // Attach emoji pickers
+  setupEmojiPicker('emoji-btn-title', 'title');
+  setupEmojiPicker('emoji-btn-desc', 'description');
+}
+
+*/
+
+
+//fuction to show citties in the search filter model
+function populateLocationDropdown() {
+	
+	console.log("inside of populatedLocationDropDown");
+    const locationDropdown = document.getElementById("location");
+
+    // Clear existing options
+    locationDropdown.innerHTML = '<option value="">Select Location</option>';
+
+    // Your state-wise city data
+    const cityData = {
+        "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik"],
+        "Karnataka": ["Bangalore", "Mysore", "Hubli"],
+        "Delhi": ["New Delhi"],
+        "Gujarat": ["Ahmedabad", "Surat", "Vadodara"],
+        "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai"],
+        "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi"],
+        "West Bengal": ["Kolkata", "Howrah", "Durgapur"]
+    };
+
+    // Flatten all cities into a single list
+    const allCities = Object.values(cityData).flat(); 
+
+    // Add cities to the dropdown
+    allCities.forEach(city => {
+        let option = document.createElement("option");
+        option.value = city;
+        option.textContent = city;
+        locationDropdown.appendChild(option);
+    });
+}
+
+
 
 // ✅ Function to handle state-city dropdown AFTER profile.jsp loads
 function initializeStateCityDropdown() {
@@ -138,20 +292,6 @@ function logoutUser() {
 
 	window.location.href = 'login'; // Redirect to login page
 }
-
-//dyanamic image upload
-
-/*function previewImage(event) {
-	const file = event.target.files[0];
-	if (file) {
-		const reader = new FileReader();
-		reader.onload = function(e) {
-			document.getElementById("profile-pic").src = e.target.result;
-		};
-		reader.readAsDataURL(file);
-	}
-}
-*/
 
 //Edit prfile
 
@@ -316,6 +456,38 @@ function initialiseSkills() {
 			alert("Failed to add certification.");
 		}
 	});
+	
+	//get educatio after page reload
+$.ajax({
+    type: "GET",
+    url: "GetEducation", // This should be the correct endpoint for fetching education details
+  	dataType: "json",
+    success: function(response) {
+        console.log("Inside success of education retrieval");
+
+        // Clear the previous education section content
+        $("#Educationsection").empty();
+
+        $.each(response, function(index, education) {
+            console.log("Inside success loop of education retrieval");
+
+            // Append education details dynamically
+             $("#Educationsection").append(
+                    "<div class='education-item'>" +
+                    "<div><strong>Level:</strong> " + education.formattedEducationLevel + "</div>" +
+                    "<div><strong>Status:</strong> " + education.status + "</div>" +
+                    "<div><strong>Percentage:</strong> " + education.percentage + "%</div>" +
+                    "<div><strong>Passing Year:</strong> " + education.passingYear + "</div>" +
+                    "<div><strong>Branch:</strong> " + education.branch + "</div>" +
+                    "</div>"
+                );
+        });
+    },
+    error: function() {
+        alert("Failed to retrieve education details.");
+    }
+});
+
 
 
 	//Display image on profile 
@@ -449,7 +621,122 @@ function initialiseSkills() {
 			}
 		});
 	});
+	
+	
+	//add education
+	
+	$("#addEducationBtn").off("click").on("click", function() {
+    var educationLevel = $("select[name='educationLevel'] option:selected").attr("data-enum");
+    var educationStatus = $("select[name='educationStatus']").val();
+    var percentage = $("input[name='percentage']").val().trim();
+    var passingYear = $("input[name='passingYear']").val().trim();
+    var Branch = $("input[name='Branch']").val().trim();
 
+    if (educationLevel === "" || educationStatus === "" || percentage === "" || passingYear === "") {
+        alert("Please fill all education details.");
+        return;
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "addEducation",
+        data: {
+            educationLevel: educationLevel,
+            status: educationStatus,
+            percentage: percentage,
+            passingYear: passingYear,
+            Branch:Branch
+           
+        },
+        dataType: "json",
+        success: function(response) {
+            console.log("Education added successfully:", response);
+
+            // Clear the input fields
+            $("select[name='educationLevel']").val("");
+            $("select[name='educationStatus']").val("");
+            $("input[name='percentage']").val("");
+            $("input[name='passingYear']").val("");
+             $("input[name='Branch']").val("");
+
+            $("#Educationsection").empty();
+
+            // Append the newly added education data
+            $.each(response, function(index, education) {
+				
+				 // Print each education object in console
+    console.log("Education Entry:", education);
+                $("#Educationsection").append(
+                    "<div class='education-item'>" +
+                    "<div><strong>Level:</strong> " + education.formattedEducationLevel + "</div>" +
+                    "<div><strong>Status:</strong> " + education.status + "</div>" +
+                    "<div><strong>Percentage:</strong> " + education.percentage + "%</div>" +
+                    "<div><strong>Passing Year:</strong> " + education.passingYear + "</div>" +
+                    "<div><strong>Branch:</strong> " + education.branch + "</div>" +
+                    "</div>"
+                );
+            });
+        },
+        error: function() {
+            alert("Failed to add education.");
+        }
+    });
+});
+
+
+
+// script to update the user profile details
+
+$("#saveProfileBtn").off("click").on("click", function() {
+	
+	console.log("inside saveprofilebtn");
+    var name = $("#editName").val().trim();
+    var email = $("#editEmail").val().trim();
+    var mobile = $("#editMobile").val().trim();
+    var gender = $("#editGender").val();
+    var state = $("#state").val();
+    var city = $("#city").val();
+
+    // Validation
+    if (name === "" || email === "" || mobile === "" || gender === "" || state === "" || city === "") {
+        alert("Please fill all profile details.");
+        return;
+    }
+
+$.ajax({
+    type: "PUT",
+    url: "updateProfile",
+    contentType: "application/json",  // Telling Spring that we are sending JSON
+    data: JSON.stringify({
+        name: name,
+        email: email,
+        mobile: mobile,
+        gender: gender,
+        state: state,
+        city: city
+    }),
+    dataType: "json",
+    success: function(response) {
+        console.log("Profile updated successfully:", response);
+        if (response.status === "success") {
+            alert("Profile updated successfully!");
+            
+             // Update the UI dynamically without refresh
+            $(".user-info h2").text("Name: "+name);
+            $(".user-info p:eq(0)").text("Email: " + email);
+            $(".user-info p:eq(1)").text("\uD83D\uDCCD Address:" + city + ", " + state);
+           // Close modal
+                closeEditProfile();
+        } else {
+            alert("Profile update failed. Try again.");
+        }
+    },
+    error: function() {
+        alert("Failed to update profile.");
+    }
+});
+
+});
 
 }
 
@@ -511,111 +798,399 @@ function closeImagePreview() {
 
 
 //Fetch all users with skills image and other data
-
 function fetchUsers() {
 	console.log("inside all users fetching");
+	
+		// Show loading message before AJAX starts
+	$("#user-container").html(`
+    <div class="loading-message" style="
+        text-align: center;
+        padding: 20px;
+        font-size: 18px;
+        color: #007bff;
+        animation: pulse 1.5s infinite;
+    ">
+      <h1>&#8987; Loading users, please wait...<h1>
+    </div>
+
+    <style>
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+`);
+
+	
 	$.ajax({
 		url: "userslist",
 		type: "GET",
 		dataType: "json",
 		success: function(users) {
 			$("#user-container").empty(); // Clear existing users
-			users.forEach(user => {
-				fetchUserImage(user.id, function(imageData) {
-					fetchPendingRequests(function(pendingRequests) {
-						fetchAllRequests(function(allRequests) {
-						let skillsList = "No skills added";
-						if (user.skills && Array.isArray(user.skills) && user.skills.length > 0) {
-							skillsList = user.skills.join(", ");
-						}
 
-						let profileImage = imageData ? `data:image/jpeg;base64,${imageData}` : "default-profile.png";
+			let userPromises = users.map((user, index) => {
+				return new Promise(resolve => {
+					fetchUserImage(user.id, function(imageData) {
+						fetchPendingRequests(function(pendingRequests) {
+							fetchAllRequests(function(allRequests) {
+								let skillsList = user.skills && user.skills.length > 0 ? user.skills.join(", ") : "No skills added";
+								let profileImage = imageData ? `data:image/jpeg;base64,${imageData}` : "default-profile.png";
+								let currentUserId = Number(document.getElementById('currentUserId').value);
 
+								let requestStatus = allRequests.find(req =>
+									(req.senderId === currentUserId && req.receiverId === user.id) ||
+									(req.senderId === user.id && req.receiverId === currentUserId)
+								)?.status;
 
-						let currentUserId = document.getElementById('currentUserId').value;
-						// Determine if the user has a pending request
+								let isRequestReceived = pendingRequests.some(req => req.senderId === user.id);
+								let buttonHtml = "";
 
-						
-							
+								if (isRequestReceived) {
+									let requestId = pendingRequests.find(req => req.senderId === user.id && req.receiverId === currentUserId)?.id;
+									buttonHtml = `
+                                    <div class="button-container" data-request-id="${requestId}" 
+                                                                  data-user-id="${user.id}" 
+             													  data-LoggedInUser-id="${currentUserId}" 
+             													  data-user-name="${user.name}" 
+             													  data-user-image="${profileImage}">
 
-							let requestStatus = allRequests.find(req =>
-								(req.senderId ===  Number(currentUserId) && req.receiverId === user.id) ||
-								(req.senderId === user.id && req.receiverId ===  Number(currentUserId))
-							)?.status;
-
-							console.log("Request Status:", requestStatus);
-						
-
-						/* console.log("Pending Requests:", JSON.stringify(pendingRequests, null, 2));*/
-
-						let isRequestReceived = pendingRequests.some(req => req.senderId === user.id);
-
-						let buttonHtml = "";
-
-
-						if (isRequestReceived) {
-
-							pendingRequests.forEach(req => {
-								console.log("Sender Id:", req?.senderId);
-								console.log("Receiver Id:", req?.receiverId);
-								console.log("staus", req?.status);
-							});
-
-
-
-
-							console.log("loged in user id is" + currentUserId);
-							console.log("sending in user id is" + user.id);
-							// Find the requestId from the pendingRequests array
-							let requestId = pendingRequests.find(req => req.senderId === user.id && req.receiverId === Number(currentUserId))?.id;
-
-							// Fixed here!
-
-							console.log("Request ID:", requestId);
-							console.log("inside isRequestReceived of script");
-							buttonHtml = `
-                            <div class="button-container" data-request-id="${requestId}">
                                 <button class="accept-btn" onclick="updateRequestStatus(${requestId}, 'Accepted')">Accept</button>
                                 <button class="reject-btn" onclick="updateRequestStatusReject(${requestId})">Reject</button>
-                                </div>`;
-						}
-
-
-
-						else if (requestStatus === "Pending") {
-
-							console.log("inside pending requestStatus");
-							buttonHtml = `<button id="requestButton-${user.id}" class="send-request-btn" disabled>Pending</button>`;
-
-						}
-						else if (requestStatus === "Accepted") {
-							console.log("inside Accepted requestStatus");
-							buttonHtml = `<button class="send-request-btn">Message</button>`;
-						}
-
-						else {
-							console.log("inside sendRequest button script");
-							buttonHtml = `<button id="requestButton-${user.id}" class="send-request-btn" onclick="sendRequest(${user.id})">Send Request</button>`;
-						}
-						
-						
-
-
-						let userCard = `
-                            <div class="user-card">
-                            	${buttonHtml}
-                                <img src="${profileImage}" alt="Profile Picture" class="profile-pic">
-                                <div class="user-info">
-                                    <h3>${user.name}</h3>
-                                    <p>Skills: ${skillsList}</p>
-                                    
-                                        
-                                    
-                                </div>
                             </div>`;
-						$("#user-container").append(userCard);
+								} else if (requestStatus === "Pending") {
+                                    buttonHtml = `<button id="requestButton-${user.id}" class="send-request-btn" disabled style="background-color: #d3d3d3;  cursor: not-allowed;">Pending</button>`;
+								} else if (requestStatus === "Accepted") {
+									buttonHtml = `<button class="send-request-btn" onclick="openMessageModal(${user.id}, '${user.name}', '${profileImage}')">Message</button>`;
+
+								} else {
+									buttonHtml = `<button id="requestButton-${user.id}" class="send-request-btn" onclick="sendRequest(${user.id})">Send Request</button>`;
+								}
+							
+								
+								let userCard = `
+                        <div class="user-card">
+                            ${buttonHtml}
+                            <img src="${profileImage}" alt="Profile Picture" class="profile-pic"  style="cursor: pointer;"
+            onclick="redirectToUserProfile(${user.id})">
+                            <div class="user-info">
+                                <h3>${user.name}</h3>
+                                <p>Skills: ${skillsList}</p>
+                                ${user.city ? `<p>City: ${user.city}</p>` : ``}
+                            </div>
+                        </div>`;
+
+								resolve({ index, userCard }); // Preserve backend order using index
+							});
 						});
 					});
+				});
+			});
+
+			Promise.all(userPromises).then(userCards => {
+				userCards.sort((a, b) => a.index - b.index); // Ensure the order matches the backend response
+				userCards.forEach(userData => {
+					$("#user-container").append(userData.userCard);
+				});
+			});
+
+		},
+		error: function(error) {
+			console.log("Error fetching users:", error);
+		}
+	});
+}
+
+
+function redirectToUserProfile(userId) {
+    console.log("Opening user profile for userId:", userId);
+
+    // 1. Open the modal
+    $("#userProfileModal").css("display", "block");
+
+    // 2. Load basic JSP (profileforotheruser.jsp) inside the modal
+    $("#userProfileContent").load("loadUserProfile?userId=" + userId, function() {
+        
+        console.log("ProfileForOtherUser JSP loaded, now fetching skills...");
+
+        // 3. After loading the JSP, call AJAX to fetch skills for that user
+        getimageforotheruser(userId);
+        fetchSkillsForOtherUser(userId);
+        getPorjectForOtherUser(userId);
+        getCertificationforother(userId);
+        getEducaationforotheruser(userId);
+
+        // Similarly you can later call fetchProjectsForOtherUser(userId), fetchEducationForOtherUser(userId), etc.
+    });
+}
+
+function redirectToUserProfileformynetwork(userId) {
+    console.log("Opening user profile for userId:", userId);
+
+    // 1. Open the modal
+    $("#userProfileModal00").css("display", "block");
+
+    // 2. Load basic JSP (profileforotheruser.jsp) inside the modal
+    $("#userProfileContent").load("loadUserProfile?userId=" + userId, function() {
+        
+        console.log("ProfileForOtherUser JSP loaded, now fetching skills...");
+
+        // 3. After loading the JSP, call AJAX to fetch skills for that user
+        getimageforotheruser(userId);
+        fetchSkillsForOtherUser(userId);
+        getPorjectForOtherUser(userId);
+        getCertificationforother(userId);
+        getEducaationforotheruser(userId);
+
+        // Similarly you can later call fetchProjectsForOtherUser(userId), fetchEducationForOtherUser(userId), etc.
+    });
+}
+function closeUserProfileModal() {
+    $("#userProfileModal").css("display", "none");
+}
+
+function getimageforotheruser(userId)
+{
+	$.ajax({
+		type: "GET",
+		data: { userId: userId },
+		url: "displayImageforotheruser",  // This URL should return the logged-in user's profile image
+		success: function(response) {
+			if (response) {
+				document.getElementById("profile-pic1").src = "data:image/jpeg;base64," + response.image;
+			}
+		},
+		error: function() {
+			console.log("No profile image found.");
+		}
+	});
+}
+
+//fetch skills for other users 
+function fetchSkillsForOtherUser(userId) {
+    console.log("Fetching skills for userId:", userId);
+
+    $.ajax({
+        type: "GET",
+        url: "getSkillsForOtherUser",
+        data: { userId: userId },
+        dataType: "json",
+        success: function(response) {
+            console.log("Skills fetched for other user:", response);
+            
+              // Set name/email/etc manually in JS
+
+            $("#skillList").empty(); // Clear old skills
+
+            if (response.length === 0) {
+                $("#skillList").append("<li>No skills added yet.</li>");
+            } else {
+                $.each(response, function(index, skill) {
+                    $("#skillList").append("<li>" + skill.skillName + "</li>");
+                });
+            }
+        },
+        error: function() {
+            alert("Failed to load skills for user.");
+        }
+    });
+}
+
+
+//fetch project for other users
+function getPorjectForOtherUser(userId){
+	//Display Projects on profile
+	$.ajax({
+		type: "GET",
+		url: "getProjectsForOtherUsers",
+		data: { userId: userId },
+		dataType: "json",
+		success: function(response) {
+
+			console.log("inside success function of getProjects for other users");
+			console.log(response);
+			/*$("input[name='projectName']").val("");
+			$("textarea[name='description']").val("");
+			$("#projectList1").empty();*/
+
+			$.each(response, function(index, project) {
+				console.log("inside loop of getProjectforotherusers");
+				console.log("project data", project)
+				$("#projectList1").append(
+					"<div class='project-item'>" +
+					"<div class='project-name'><strong>NAME:</strong> " + project.projectName + "</div>" +
+					"<div class='project-description'><strong>DESCRIPTION:</strong> " + project.description + "</div>" +
+					"</div>"
+				);
+			});
+		},
+		error: function() {
+			alert("Failed to add project.");
+		}
+	});
+
+}
+
+function getCertificationforother(userId)
+{
+	
+		$.ajax({
+		type: "GET",
+		url: "GetCertificationforother",
+		data: { userId: userId },
+		/*processData: false,
+		contentType: false,*/
+		success: function(response) {
+
+			console.log("inside sucess of certificate");
+		
+
+			$.each(response, function(index, cert) {
+					
+console.log("Formatted response:", JSON.stringify(response, null, 2));
+				console.log("inside sucess of certificate loop");
+				$("#certificationList1").append(
+"<li><a href='downloadCertificationforother?cid=" + cert.cid + "&pid=" + cert.pid + "' target='_blank' class='certification-link'>" +
+					cert.certifcateName + "</a></li>"
+				);
+			});
+		},
+		error: function() {
+			alert("Failed to add certification.");
+		}
+	});
+	
+}
+
+function getEducaationforotheruser(userId)
+{
+	$.ajax({
+    type: "GET",
+    url: "GetEducationforotheruser", // This should be the correct endpoint for fetching education details
+  	dataType: "json",
+  	data: { userId: userId },
+    success: function(response) {
+        console.log("Inside success of education retrieval");
+
+        // Clear the previous education section content
+        $("#Educationsection").empty();
+
+        $.each(response, function(index, education) {
+            console.log("Inside success loop of education retrieval");
+
+            // Append education details dynamically
+             $("#Educationsection").append(
+                    "<div class='education-item'>" +
+                    "<div><strong>Level:</strong> " + education.formattedEducationLevel + "</div>" +
+                    "<div><strong>Status:</strong> " + education.status + "</div>" +
+                    "<div><strong>Percentage:</strong> " + education.percentage + "%</div>" +
+                    "<div><strong>Passing Year:</strong> " + education.passingYear + "</div>" +
+                    "<div><strong>Branch:</strong> " + education.branch + "</div>" +
+                    "</div>"
+                );
+        });
+    },
+    error: function() {
+        alert("Failed to retrieve education details.");
+    }
+});
+}
+
+//fetch all users with Request status is Accepted
+
+//Fetch all users with skills image and other data
+function FetchAcceptedUsers() {
+	console.log("inside all users fetching");
+	
+		// Show loading message before AJAX starts
+	$("#user-container1").html(`
+    <div class="loading-message" style="
+        text-align: center;
+        padding: 20px;
+        font-size: 18px;
+        color: #007bff;
+        animation: pulse 1.5s infinite;
+    ">
+      <h1>&#8987; Loading users, please wait...<h1>
+    </div>
+
+    <style>
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+`);
+
+
+	$.ajax({
+		url: "acceptedList",
+		type: "GET",
+		dataType: "json",
+		success: function(users) {
+			$("#user-container1").empty();
+			
+			console.log("length of users is "+users.length);
+	
+	  if (users.length === 0) {
+		  console.log("inside of user length 0 for acceptedList");
+        $("#user-container1").html(`
+            <div class="no-users-message" style="text-align: center; padding: 20px; font-size: 18px; color: blue;">
+                <h1>&#128101; Followers List is Empty.<h1>
+            </div>
+        `);
+     
+        return; // stop further processing
+    }
+    
+			let userPromises = users.map((user, index) => {
+				return new Promise(resolve => {
+					fetchUserImage(user.id, function(imageData) {
+						fetchAllRequests(function(allRequests) {
+						let skillsList = user.skills && user.skills.length > 0 ? user.skills.join(", ") : "No skills added";
+						let profileImage = imageData ? `data:image/jpeg;base64,${imageData}` : "default-profile.png";
+						let currentUserId = Number(document.getElementById('currentUserId').value);
+
+						let matchingRequest = allRequests.find(req =>
+    (req.senderId === currentUserId && req.receiverId === user.id)||  (req.senderId === user.id && req.receiverId === currentUserId)
+);
+
+
+let requestStatus = matchingRequest?.status;
+let requestId1 = matchingRequest?.id;
+
+
+console.log("rquest status is "+requestId1);
+						let buttonHtml = `
+						<div class="button-container1" data-request-id="${requestId1}">
+							<button class="send-request-btn5" onclick="openMessageModal(${user.id}, '${user.name}', '${profileImage}')">Message</button>
+							<button id="requestButton1-${user.id}" class="reject-btn1" onclick="updateRequestStatusReject(${requestId1})">Unfollow</button>
+						</div>`;
+						
+						
+						let userCard = `
+							<div class="user-card">
+								${buttonHtml}
+								<img src="${profileImage}" alt="Profile Picture" class="profile-pic" style="cursor: pointer;"
+            onclick="redirectToUserProfileformynetwork(${user.id})">
+								<div class="user-info">
+									<h3>${user.name}</h3>
+									<p>Skills: ${skillsList}</p>
+									${user.city ? `<p>City: ${user.city}</p>` : ``}
+								</div>
+							</div>`;
+
+						resolve({ index, userCard });
+					});
+				});
+			});
+			});
+
+			Promise.all(userPromises).then(userCards => {
+				userCards.forEach(userData => {
+					$("#user-container1").append(userData.userCard);
 				});
 			});
 		},
@@ -624,6 +1199,349 @@ function fetchUsers() {
 		}
 	});
 }
+
+
+//Fetch all users with skills image and other data
+function FetchPendingUsers() {
+	console.log("inside all users fetching");
+	
+		// Show loading message before AJAX starts
+	$("#user-container4").html(`
+    <div class="loading-message" style="
+        text-align: center;
+        padding: 20px;
+        font-size: 18px;
+        color: #007bff;
+        animation: pulse 1.5s infinite;
+    ">
+      <h1>&#8987; Loading users, please wait...<h1>
+    </div>
+
+    <style>
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+`);
+
+
+	$.ajax({
+		url: "RejectedList",
+		type: "GET",
+		dataType: "json",
+		success: function(users) {
+			$("#user-container4").empty();
+			
+			console.log("length of users is "+users.length);
+	
+	  if (users.length === 0) {
+		  console.log("inside of user length 0 for acceptedList");
+        $("#user-container4").html(`
+            <div class="no-users-message" style="text-align: center; padding: 20px; font-size: 18px; color: blue;">
+                <h1>&#128101; No Pending Reqeusts.<h1>
+            </div>
+        `);
+     
+        return; // stop further processing
+    }
+    
+			let userPromises = users.map((user, index) => {
+				return new Promise(resolve => {
+					fetchUserImage(user.id, function(imageData) {
+						fetchAllRequests(function(allRequests) {
+						let skillsList = user.skills && user.skills.length > 0 ? user.skills.join(", ") : "No skills added";
+						let profileImage = imageData ? `data:image/jpeg;base64,${imageData}` : "default-profile.png";
+						let currentUserId = Number(document.getElementById('currentUserId').value);
+
+						let matchingRequest = allRequests.find(req =>
+    (req.senderId === currentUserId && req.receiverId === user.id)
+);
+
+
+						let buttonHtml = `<div class="button-container1">
+							<button class="send-request-btn5" disabled style="background-color: #d3d3d3;  cursor: not-allowed;">Pending</button>
+						</div>`;
+						
+						
+						let userCard = `
+							<div class="user-card">
+								${buttonHtml}
+								<img src="${profileImage}" alt="Profile Picture" class="profile-pic"style="cursor: pointer;"
+            onclick="redirectToUserProfileformynetwork(${user.id})">
+								<div class="user-info">
+									<h3>${user.name}</h3>
+									<p>Skills: ${skillsList}</p>
+									${user.city ? `<p>City: ${user.city}</p>` : ``}
+								</div>
+							</div>`;
+
+						resolve({ index, userCard });
+					});
+				});
+			});
+			});
+
+			Promise.all(userPromises).then(userCards => {
+				userCards.forEach(userData => {
+					$("#user-container4").append(userData.userCard);
+				});
+			});
+		},
+		error: function(error) {
+			console.log("Error fetching users:", error);
+		}
+	});
+}
+
+
+//Fetch accepted users after clicking folloowers tab
+function fetchAcceptedUsersformy() {
+	
+	console.log("inside of fetchAcceptedUsersformy");
+    // First, make sure the DOM elements exist
+    $('#followers1').off('click').on('click', function (e) {
+		console.log("inside of followers1")
+        e.preventDefault();
+        
+        // Hide all tab content and show followers section
+        $('.tab-content').hide();
+        $('#followers').show();
+
+        // Fetch and display accepted users
+        FetchAcceptedUsers();
+    });
+
+    $('#pending1').off('click').on('click', function (e) {
+        e.preventDefault();
+        
+        // Hide all tab content and show pending section
+        $('.tab-content').hide();
+        $('#pending').show();
+        
+        FetchPendingUsers()
+    });
+
+    // Optional: load followers tab by default
+    $('#followers1').click(); 
+}
+
+
+//fuciton to fetch the filtered users
+function applyFilters() {
+	
+	console.log("insdie of applyFilters");
+    let location = $("#location").val();
+    let skills = $("#skills").val().split(",").map(skill => skill.trim());
+    let experience = $("#experience").val();
+    let currentUserId = Number(document.getElementById('currentUserId').value);
+    
+    console.log(location);
+    console.log(skills);
+    console.log(experience);
+
+    $.ajax({
+        url: "filterUsers",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ location, skills, experience }),
+        dataType: "json",
+        success: function(users) {
+            $("#user-container").empty();
+            
+            // ✅ Check if no users found
+    if (users.length === 0) {
+        $("#user-container").html(`
+            <div class="no-users-message" style="text-align: center; padding: 20px; font-size: 18px; color: red;">
+                <h1>&#128542; Sorry, no users found with the selected filters.<h1>
+            </div>
+        `);
+        closeFilterModal();
+        return; // stop further processing
+    }
+    
+
+            let userPromises = users.map((user, index) => {
+                return new Promise(resolve => {
+                    fetchUserImage(user.id, function(imageData) {
+                        fetchPendingRequests(function(pendingRequests) {
+                            fetchAllRequests(function(allRequests) {
+                                let skillsList = user.skills && user.skills.length > 0 ? user.skills.join(", ") : "No skills added";
+                                let profileImage = imageData ? `data:image/jpeg;base64,${imageData}` : "default-profile.png";
+								let currentUserId = Number(document.getElementById('currentUserId').value);
+
+                                let requestStatus = allRequests.find(req =>
+                                    (req.senderId === currentUserId && req.receiverId === user.id) ||
+                                    (req.senderId === user.id && req.receiverId === currentUserId)
+                                )?.status;
+
+                                let isRequestReceived = pendingRequests.some(req => req.senderId === user.id);
+                                let buttonHtml = "";
+
+                                if (isRequestReceived) {
+                                    let requestId = pendingRequests.find(req =>
+                                        req.senderId === user.id && req.receiverId === currentUserId
+                                    )?.id;
+                                    buttonHtml = `
+                                    <div class="button-container" data-request-id="${requestId}" 
+                                                                  data-user-id="${user.id}" 
+                                                                  data-LoggedInUser-id="${currentUserId}" 
+                                                                  data-user-name="${user.name}" 
+                                                                  data-user-image="${profileImage}">
+
+                                        <button class="accept-btn" onclick="updateRequestStatus(${requestId}, 'Accepted')">Accept</button>
+                                        <button class="reject-btn" onclick="updateRequestStatusReject(${requestId})">Reject</button>
+                                    </div>`;
+                                } else if (requestStatus === "Pending") {
+                                    buttonHtml = `<button id="requestButton-${user.id}" class="send-request-btn" disabled style="background-color: #d3d3d3;  cursor: not-allowed;">Pending</button>`;
+                                } else if (requestStatus === "Accepted") {
+                                    buttonHtml = `<button class="send-request-btn" onclick="openMessageModal(${user.id}, '${user.name}', '${profileImage}')">Message</button>`;
+                                } else {
+                                    buttonHtml = `<button id="requestButton-${user.id}" class="send-request-btn" onclick="sendRequest(${user.id})">Send Request</button>`;
+                                }
+								
+								
+                                let userCard = `
+                                <div class="user-card">
+                                    ${buttonHtml}
+                                    <img src="${profileImage}" alt="Profile Picture" class="profile-pic" style="cursor: pointer;"
+            onclick="redirectToUserProfile(${user.id})">
+                                    <div class="user-info">
+                                        <h3>${user.name}</h3>
+                                        <p>Skills: ${skillsList}</p>
+                                        ${user.city ? `<p>City: ${user.city}</p>` : ``}
+                                       
+                                    </div>
+                                </div>`;
+
+                                resolve({ index, userCard });
+                            });
+                        });
+                    });
+                });
+            });
+
+            Promise.all(userPromises).then(userCards => {
+              
+                userCards.forEach(userData => {
+                    $("#user-container").append(userData.userCard);
+                });
+            });
+            
+            closeFilterModal();
+        },
+        error: function(error) {
+            console.log("Error fetching filtered users:", error);
+        }
+    });
+}
+
+//fuciton to fetch the  users by name
+function SearchUsersByName() {
+	
+	console.log("insdie of applyFilters");
+    let searchBox = $("#searchBox").val();
+ 
+	console.log(searchBox);
+    $.ajax({
+        url: "SearchUsers",
+        type: "GET",
+        
+        data: { searchBox: searchBox },
+        dataType: "json",
+        success: function(users) {
+            $("#user-container").empty();
+            
+            // ✅ Check if no users found
+    if (users.length === 0) {
+        $("#user-container").html(`
+            <div class="no-users-message" style="text-align: center; padding: 20px; font-size: 18px; color: red;">
+                <h1>&#128542; Sorry, no users found with the selected filters.<h1>
+            </div>
+        `);
+        closeFilterModal();
+        return; // stop further processing
+    }
+    
+
+            let userPromises = users.map((user, index) => {
+                return new Promise(resolve => {
+                    fetchUserImage(user.id, function(imageData) {
+                        fetchPendingRequests(function(pendingRequests) {
+                            fetchAllRequests(function(allRequests) {
+                                let skillsList = user.skills && user.skills.length > 0 ? user.skills.join(", ") : "No skills added";
+                                let profileImage = imageData ? `data:image/jpeg;base64,${imageData}` : "default-profile.png";
+								let currentUserId = Number(document.getElementById('currentUserId').value);
+
+                                let requestStatus = allRequests.find(req =>
+                                    (req.senderId === currentUserId && req.receiverId === user.id) ||
+                                    (req.senderId === user.id && req.receiverId === currentUserId)
+                                )?.status;
+
+                                let isRequestReceived = pendingRequests.some(req => req.senderId === user.id);
+                                let buttonHtml = "";
+
+                                if (isRequestReceived) {
+                                    let requestId = pendingRequests.find(req =>
+                                        req.senderId === user.id && req.receiverId === currentUserId
+                                    )?.id;
+                                    console.log("request id in Search users is"+requestId);
+                                    buttonHtml = `
+                                    <div class="button-container" data-request-id="${requestId}" 
+                                                                  data-user-id="${user.id}" 
+                                                                  data-LoggedInUser-id="${currentUserId}" 
+                                                                  data-user-name="${user.name}" 
+                                                                  data-user-image="${profileImage}">
+
+                                        <button class="accept-btn" onclick="updateRequestStatus(${requestId}, 'Accepted')">Accept</button>
+                                        <button class="reject-btn" onclick="updateRequestStatusReject(${requestId})">Reject</button>
+                                    </div>`;
+                                } else if (requestStatus === "Pending") {
+                                    buttonHtml = `<button id="requestButton-${user.id}" class="send-request-btn" disabled style="background-color: #d3d3d3;  cursor: not-allowed;">Pending</button>`;
+                                } else if (requestStatus === "Accepted") {
+                                    buttonHtml = `<button class="send-request-btn" onclick="openMessageModal(${user.id}, '${user.name}', '${profileImage}')">Message</button>`;
+                                } else {
+                                    buttonHtml = `<button id="requestButton-${user.id}" class="send-request-btn" onclick="sendRequest(${user.id})">Send Request</button>`;
+                                }
+								
+								
+                                let userCard = `
+                                <div class="user-card">
+                                    ${buttonHtml}
+                                    <img src="${profileImage}" alt="Profile Picture" class="profile-pic" style="cursor: pointer;"
+            onclick="redirectToUserProfile(${user.id})">
+                                    <div class="user-info">
+                                        <h3>${user.name}</h3>
+                                        <p>Skills: ${skillsList}</p>
+                                        ${user.city ? `<p>City: ${user.city}</p>` : ``}
+                                       
+                                    </div>
+                                </div>`;
+
+                                resolve({ index, userCard });
+                            });
+                        });
+                    });
+                });
+            });
+
+            Promise.all(userPromises).then(userCards => {
+              
+                userCards.forEach(userData => {
+                    $("#user-container").append(userData.userCard);
+                });
+            });
+            
+            closeFilterModal();
+        },
+        error: function(error) {
+            console.log("Error fetching filtered users:", error);
+        }
+    });
+}
+
+
 
 function fetchUserImage(userId, callback) {
 	console.log("inside user image fetching");
@@ -687,16 +1605,78 @@ function getRequestStatus(receiverId1) {
 
 // Function to send a connection request
 function sendRequest(receiverId) {
+	console.log("receiverId is"+receiverId);
+	const button = document.getElementById(`requestButton-${receiverId}`);
+console.log("Found button:", `requestButton-${receiverId}`, button ? button.outerHTML : "❌ Button not found");
+
+	if (button) {
+		// Immediately give feedback to user
+		console.log("inside of button ");
+		button.disabled = true;
+		button.textContent = "Sending...";
+	}
+
 	$.ajax({
 		type: "POST",
 		url: `send/${receiverId}`,
 		dataType: "json",
-		success: function() {
-			console.log("inside success of ajax for sedning request");
-			$("#requestButton-" + receiverId).text("Pending").prop("disabled", true);
+		success: function() { 
+			console.log("Request sent successfully");
+			if (button) {
+				console.log("inside of pending button of ajax");
+				button.textContent = "Pending";
+				button.disabled = true;
+				button.style.backgroundColor = "#d3d3d3"; // light grey
+
+button.style.cursor = "not-allowed";
+			}
 		},
 		error: function() {
 			alert("Error sending request.");
+			if (button) {
+				button.textContent = "Send Request";
+				button.disabled = false;
+			}
+		}
+	});
+}
+
+
+
+// Function to send a connection request for accepted users
+function sendRequestforAccepted(receiverId) {
+		console.log("receiverId is"+receiverId);
+	const button = document.getElementById(`requestButton1-${receiverId}`);
+console.log("Found button:", `requestButton1-${receiverId}`, button ? button.outerHTML : "❌ Button not found");
+
+	if (button) {
+		// Immediately give feedback to user
+		console.log("inside of button ");
+		button.disabled = true;
+		button.textContent = "Sending...";
+	}
+
+	$.ajax({
+		type: "POST",
+		url: `send/${receiverId}`,
+		dataType: "json",
+		success: function() { 
+			console.log("Request sent successfully");
+			if (button) {
+				console.log("inside of pending button of ajax");
+				button.textContent = "Pending";
+				button.disabled = true;
+				button.style.backgroundColor = "#d3d3d3"; // light grey
+
+button.style.cursor = "not-allowed";
+			}
+		},
+		error: function() {
+			alert("Error sending request.");
+			if (button) {
+				button.textContent = "Send Request";
+				button.disabled = false;
+			}
 		}
 	});
 }
@@ -709,17 +1689,26 @@ function updateRequestStatus(requestId, status) {
 		dataType: "json",
 		success: function(response) {
 			console.log(response.message); // Success message from backend
-			
+
 			// Change the button to 'Message' without refreshing
 			const buttonContainer1 = document.querySelector(`.button-container[data-request-id="${requestId}"]`);
 			if (buttonContainer1) {
 				console.log("inside of buttonContainer1");
-				buttonContainer1.innerHTML = `<button class="send-request-btn">Message</button>`;
+
+				// Retrieve user details from data attributes
+				let userId = buttonContainer1.getAttribute("data-user-id");
+				let userName = buttonContainer1.getAttribute("data-user-name");
+				let userImage = buttonContainer1.getAttribute("data-user-image");
+
+
+
+				buttonContainer1.innerHTML = `<button class="send-request-btn" onclick="openMessageModal(${userId}, '${userName}', '${userImage}')">Message</button>`;
+
 			}
-			
+
 		},
 		error: function() {
-			console.error("Error:", error);
+			
 			alert("Error updating request status.");
 		}
 	});
@@ -731,32 +1720,34 @@ function updateRequestStatusReject(requestId) {
 		url: `Reject/${requestId}`,
 		dataType: "json",
 		success: function(response) {
-
 			let userId = response.userId;
-			console.log("Requested UserId is"+userId);
+			console.log("Requested UserId is " + userId);
 
-			// Change the button container to 'Send Request' button
-			// Target the button container and replace its content with 'Send Request' button
-			
+			// Try to find both types of containers
 			const buttonContainer = document.querySelector(`.button-container[data-request-id="${requestId}"]`);
-			
-			if(buttonContainer)
-			{
-				
-buttonContainer.innerHTML = `<button id="requestButton-${userId}" class="send-request-btn12" onclick="sendRequest(${userId})">Send Request</button>`;
-			
+			const buttonContainer1 = document.querySelector(`.button-container1[data-request-id="${requestId}"]`);
+
+			const sendRequestBtnHTML = `<button id="requestButton-${userId}" class="send-request-btn12" onclick="sendRequest(${userId})">Send Request</button>`;
+			const sendRequestBtnHTMLAccepted = `<button id="requestButton1-${userId}" class="send-request-btn12" onclick="sendRequestforAccepted(${userId})">Send Request</button>`;
+
+			// Update for findyourpartner.jsp
+			if (buttonContainer) {
+				console.log("inside of buttonContainer");
+				buttonContainer.innerHTML = sendRequestBtnHTML;
 			}
-						
+
+			// Update for network.jsp
+			if (buttonContainer1) {
+				console.log("inside of buttonContainer1");
+				buttonContainer1.innerHTML = sendRequestBtnHTMLAccepted;
+			}
 		},
-		error: function() {
+		error: function(error) {
 			console.error("Error:", error);
 			alert("Error updating request status.");
 		}
 	});
 }
-
-
-
 
 function fetchAllRequests(callback) {
 	$.ajax({
@@ -775,4 +1766,332 @@ function fetchAllRequests(callback) {
 
 
 
+// Open the modal and set user details
+// Open the modal and set user details
+function openMessageModal(userId, userName, userImage) {
+	
+    document.getElementById("messageModal").setAttribute("data-receiver-id", userId);
+    document.getElementById("messageUserName").innerText = userName;
+    document.getElementById("messageUserImg").src = userImage;
+    document.getElementById("messageModal").style.display = "block";
+    
+    setTimeout(() => {
+        let chatBody = document.getElementById("chatMessages");
+        if (chatBody) {
+            chatBody.scrollTop = chatBody.scrollHeight;
+            console.log("Scrolled to bottom!");
+        } else {
+            console.warn("chatMessages element not found!");
+        }
+    }, 2000);
 
+    // When user sees message, update to SEEN
+    document.getElementById("messageModal").addEventListener("click", function() {
+        let messages = document.querySelectorAll(".received-message");
+        console.log("messageModal is clicked");
+        messages.forEach(msgElement => {
+            console.log("inside messageModal if there are received messages");
+            let messageId = msgElement.getAttribute("data-message-id");
+            if (messageId) {
+                console.log("message id is " + messageId);
+                updateMessageStatus(messageId, "SEEN");
+            }
+        });
+    });
+
+    let currentUserId = Number(document.getElementById('currentUserId').value);
+    let senderId = currentUserId;  // Get the logged-in user's ID
+    let receiverId = document.getElementById("messageModal").getAttribute("data-receiver-id");
+
+    // Fetch previous chat messages
+fetchChatMessages(senderId, receiverId).then(messages => {
+    console.log("Checking messages for status update...");
+
+    let loggedInUserId = Number(document.getElementById('currentUserId').value);
+
+    // ✅ Filter only received messages (messages sent by the other user)
+    let receivedMessages = messages.filter(msg => msg.receiverId == loggedInUserId && msg.senderId==userId);
+
+    receivedMessages.forEach(msg => {
+        console.log("Received Message ID:", msg.id);
+
+        if (msg.status === "DELIVERED") {  
+            console.log("Marking message as SEEN:", msg.id);
+            updateMessageStatus(msg.id, "SEEN");
+        }
+    
+    });
+
+}).catch(error => {
+    console.error("Error fetching messages:", error);
+});
+
+
+    // Send button functionality
+    $(document).off("click", "#sendBtn0").on("click", "#sendBtn0", function() {
+        console.log("inside sendBtn0 event listener");
+
+        let currentUserId = Number(document.getElementById('currentUserId').value);
+        let senderId = currentUserId;  // Get the logged-in user's ID
+        let receiverId = document.getElementById("messageModal").getAttribute("data-receiver-id");
+        let messageText = document.getElementById("messageInput").value;
+        let fileInput = document.getElementById("fileInput").files[0];  // File input if needed
+
+        // Check if at least a message or a file is provided
+        if (messageText.trim() === "" && !fileInput) {
+            alert("Please enter a message or select a file!");
+            return;
+        }
+
+        // Call the function to send message via WebSocket
+        sendMessage(senderId, receiverId, messageText, fileInput);
+
+        // Clear the input field after sending the message
+        document.getElementById("messageInput").value = "";
+        document.getElementById("fileInput").value = "";
+    });
+}
+
+// Close the modal
+function closeMessageModal() {
+	document.getElementById("messageModal").style.display = "none";
+}
+
+//code to retrieve the old messages
+function fetchChatMessages(senderId, receiverId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: "chat",
+            data: { senderId: senderId, receiverId: receiverId },
+            success: function(messages) {
+                let loggedInUserId = Number(document.getElementById('currentUserId').value);
+                console.log("inside of fetchChatMessages");
+                let chatBody = document.getElementById("chatMessages");
+                chatBody.innerHTML = ""; // Clear existing messages
+
+                messages.forEach(msg => {
+                    let messageClass = (msg.senderId === loggedInUserId) ? "sent-message" : "received-message";
+                    let messageElement = `<div class="${messageClass}"><p>${msg.messageText || ''}</p>`;
+
+                    // Display message status (Sent, Delivered, Seen)
+                    if (msg.senderId === loggedInUserId && msg.status) {
+                        let statusText = '';
+                        switch (msg.status) {
+                            case 'SENT':
+                                statusText = 'Sent';
+                                break;
+                            case 'DELIVERED':
+                                statusText = 'Delivered';
+                                break;
+                            case 'SEEN':
+                                statusText = 'Seen';
+                                break;
+                            default:
+                                statusText = '';
+                        }
+                        messageElement += `<small class="status">${statusText}</small>`; // Display status below the message
+                    }
+
+                    // Display file attachment
+                    if (msg.filePath) {
+                        messageElement += `<p><a href="/messages/download/${msg.filePath}" download>📂 Download File</a></p>`;
+                    }
+
+                    messageElement += `</div>`;
+                    chatBody.innerHTML += messageElement;
+                });
+
+                resolve(messages);  // Resolve the promise after messages are successfully fetched
+            },
+            error: function(error) {
+                console.error("Error fetching messages:", error);
+                reject(error);  // Reject the promise if there is an error
+            }
+        });
+    });
+}
+
+
+
+
+//code to handle the realtime chatting
+
+let socket = new SockJS('/build_your_team1/websocket');
+let stompClient = Stomp.over(socket);
+
+function connect() {
+	
+	console.log("inside connect function");
+	stompClient.connect({}, function(frame) {
+		
+			let loggedInUserId = Number(document.getElementById('currentUserId').value);
+
+		
+		console.log("inside stomclient Connect methods");
+		console.log('Connected: ' + frame);
+		stompClient.subscribe(`/topic/messages/${loggedInUserId}`, function(messageOutput) {
+			
+			console.log("inside of recived message succesfully");
+			let newMessage = JSON.parse(messageOutput.body);
+			displayNewMessage(newMessage);
+			
+			    // ✅ Mark message as DELIVERED when received
+    updateMessageStatus(newMessage.id, "DELIVERED");
+		});
+		
+		 // Subscribe to message status updates
+        stompClient.subscribe('/topic/messages/status/' + loggedInUserId, function(statusUpdate) {
+			console.log("inside stomclien.subscribe for message status");
+            let updatedMessage = JSON.parse(statusUpdate.body);
+            updateMessageUIStatus(updatedMessage);
+        });
+        
+	});
+}
+
+function displayNewMessage(msg) {
+	
+				let loggedInUserId = Number(document.getElementById('currentUserId').value);
+
+	let chatBody = document.getElementById("chatMessages");
+	let messageClass = (msg.senderId === loggedInUserId) ? "sent-message" : "received-message";
+	let messageElement = `<div class="${messageClass}"  data-message-id="${msg.id}"><p>${msg.messageText || ''}</p>`;
+
+	if (msg.senderId === loggedInUserId && msg.status) {
+		let statusText = msg.status === 'SENT' ? 'Sent' :
+			msg.status === 'DELIVERED' ? 'Delivered' :
+				msg.status === 'SEEN' ? 'Seen' : '';
+		messageElement += `<small class="status">${statusText}</small>`;
+	}
+
+	if (msg.filePath) {
+		messageElement += `<p><a href="/messages/download/${msg.filePath}" download>📂 Download File</a></p>`;
+	}
+
+	messageElement += `</div>`;
+	chatBody.innerHTML += messageElement;
+	chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll to new messages
+}
+
+connect();
+
+//function to send the message
+
+function sendMessage(senderId, receiverId, messageText, file) {
+	if (file) {
+		
+		console.log("inside if file is present");
+		// First, upload the file using REST API
+		let formData = new FormData();
+		formData.append("file", file);
+
+		fetch("/uploadFile", {
+			method: "POST",
+			body: formData
+		})
+			.then(response => response.json())
+			.then(data => {
+				let filePath = data.filePath; // Get file URL/path from response
+
+				// Now send the message via WebSocket with the file path
+				let messageData = {
+					senderId: senderId,
+					receiverId: receiverId,
+					messageText: messageText,
+					filePath: filePath
+				};
+				stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(messageData));
+			})
+			.catch(error => console.error("File upload failed", error));
+	} else {
+		console.log("inside if file is not present");
+		// Send only text message via WebSocket
+		let messageData = {
+			senderId: senderId,
+			receiverId: receiverId,
+			messageText: messageText,
+			filePath: null
+		};
+		stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(messageData));
+	}
+}
+
+
+
+//update the message ui status
+
+function updateMessageUIStatus(updatedMessage) {
+	
+	console.log("inside updateMessageUIStatus");
+    let messageElement = document.querySelector(`[data-message-id="${updatedMessage.id}"]`);
+    if (messageElement) {
+        let statusElement = messageElement.querySelector(".status");
+        if (statusElement) {
+            statusElement.textContent = updatedMessage.status; // Update status (Sent → Delivered → Seen)
+        }
+    }
+}
+
+
+//fucntion to send an HTTP request to the backend
+
+function updateMessageStatus(messageId, status) {
+    $.ajax({
+        url: "updateStatus",  // The full URL path for the request
+        type: "POST",  // Use POST request
+        contentType: "application/json",
+        dataType: "json",  // Set content type as JSON
+        data: JSON.stringify({
+            messageId: messageId,
+            status: status
+        }),  // Send the message ID and status in the request body
+        success: function(updatedMessage) {
+			
+			console.log("inside ajax of update messageStatus");
+/* updateMessageUIStatus(updatedMessage); */ // ✅ Update UI in real-time       
+  },
+        error: function(xhr, status, error) {
+            console.error("Error updating status:", error);  // If error occurs, log it
+        }
+    });
+}
+
+//script for adding blog in database 
+
+function CreatPost(){
+$("#createBlogBtn").off("click").on("click", function () {
+    var formData = new FormData();
+    formData.append("title", $("input[name='title']").val());
+    formData.append("description", $("textarea[name='description']").val());
+    formData.append("image", $("input[name='image']")[0].files[0]);
+    
+    console.log("enterd inside createpost");
+
+    $.ajax({
+        type: "POST",
+        url: "addBlogss",
+        data: formData,
+        datatype:"json",
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            console.log("Blog added:", response);
+            alert("Blog posted successfully!");
+                            location.reload(); // 👈 Reload page after alert
+
+            $("input[name='title']").val("");
+            $("textarea[name='description']").val("");
+            $("input[name='image']").val("");
+            
+        },
+        error: function () {
+            alert("Failed to add blog.");
+        }
+    });
+});
+}
+
+
+
+ 

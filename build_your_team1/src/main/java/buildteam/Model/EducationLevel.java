@@ -15,4 +15,9 @@ public enum EducationLevel {
     public String getDisplayName() {
         return displayName;
     }
+    
+    @Override
+    public String toString() {
+        return displayName;  // Ensure this returns user-friendly text
+    }
 }

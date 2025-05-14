@@ -47,6 +47,8 @@
 }
 
 
+
+
 .accept-btn:hover {
     background-color: #8fdb8f;
 }
@@ -54,6 +56,26 @@
 .reject-btn:hover {
     background-color: rgb(240, 60, 60);
 }
+
+
+.modal40 {
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+.modal40-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 20px;
+  width: 56%;
+  border-radius: 10px;
+}
+
    	 
     </style>
 </head>
@@ -72,7 +94,7 @@
     <div class="serach-container">
   
         <input type="text" id="searchBox" class="search-box" placeholder="Search for users...">
-         <button class="search-btn">Search</button>
+         <button class="search-btn" onclick="SearchUsersByName()">Search</button>
          
         <button class="filter-btn" onclick="openFilterModal()">Filter</button>
         
@@ -83,34 +105,28 @@
   <div id="filterModal" class="modal1">
     <div class="modal-header1">
         <h2>Filter Users</h2>
-        <button class="close-btn1" onclick="closeFilterModal()">✖</button>
+        <button class="close-btn1"  onclick="closeFilterModal()">✖</button>
     </div>
 
     <div class="modal-content1">
         <!-- Location Filter -->
-        <label for="location">Location:</label>
-        <select id="location">
+        <label for="location" >Location:</label>
+        <select id="location" >
             <option value="">Select Location</option>
-            <option value="Delhi">Delhi</option>
-            <option value="Mumbai">Mumbai</option>
-            <option value="Bangalore">Bangalore</option>
+           
         </select>
 
         <!-- Skills Filter -->
         <label for="skills">Skills:</label>
-        <select id="skills" multiple>
-            <c:forEach var="skill" items="${uniqueSkills}">
-                <option value="${skill}">${skill}</option>
-            </c:forEach>
-        </select>
+        <input  id="skills" type="text" placeholder="Enter the skills here">
 
         <!-- Availability Filter -->
-        <label>Availability:</label>
+      <!--   <label>Availability:</label>
         <div class="radio-group">
             <input type="radio" name="availability" value="full-time"> Full Time
             <input type="radio" name="availability" value="part-time"> Part Time
             <input type="radio" name="availability" value="not-available"> Not Available
-        </div>
+        </div> -->
 
         <!-- Experience Filter -->
         <label for="experience">Experience (Projects Done):</label>
@@ -126,21 +142,54 @@
     </div>
 </div>
         
+        <!-- Messaging Modal -->
+<!-- WhatsApp-Style Chat Modal -->
+
+<div id="messageModal" class="modal20" data-receiver-id="">
+    <div class="modal20-header">
+        <img id="messageUserImg" src="" alt="User Image" class="modal-profile-pic">
+        <h3 id="messageUserName"></h3>
+        <span class="close" onclick="$('#messageModal').hide()">&times;</span>
+    </div>
+
+    <div class="modal20-body">
+        <div id="chatMessages">
+            <!-- Chat messages will be dynamically added here -->
+        </div>
+    </div>
+
+    <div class="modal20-footer">
+    
+     <label for="fileInput" class="file-upload-label">
+           📁
+        </label>
+        <input type="file" id="fileInput" style="display: none;" onchange="previewFile()">
+
+        <!-- File Preview -->
+        <span id="filePreview" class="file-preview"></span>
+        
+        <textarea id="messageInput" placeholder="Type a message..."></textarea>
+        <button class="send-btn20" id="sendBtn0" >Send</button>
+    </div>
+</div>
+        
+        <!-- Modal for User Profile -->
+<div id="userProfileModal" class="modal40" style="display:none;">
+  <div class="modal40-content">
+    <span class="close" onclick="closeUserProfileModal()">&times;</span>
+    <div id="userProfileContent">
+      <!-- User profile (profileforotheruser.jsp content) will load here dynamically -->
+    </div>
+  </div>
+</div>
+        
+        
          <!-- Card Container -->
     <div class="main-content">
     	
 
         <!-- Sample Card for Demonstration -->
-        <div class="user-card">
-            <img src="<c:url value='' />" alt="Profile Picture" class="profile-pic">
-            
-            <div class="user-info">
-                <h3>John Doe</h3>
-                <p>Skills: Java, Spring, Hibernate</p>
-                <p class="user-about">About: Passionate developer looking for a team.</p>
-                <button class="send-request-btn" onclick="sendRequest('John Doe')">Send Request</button>
-           </div>
-        </div>
+    
         
         <!-- Repeat for other users (Using JSTL) -->
        <!-- Add this div where the user cards will be inserted -->

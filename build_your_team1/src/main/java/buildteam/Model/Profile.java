@@ -14,7 +14,7 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Pid;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL , orphanRemoval = true)
     @JoinColumn(name = "user_id", referencedColumnName = "id")//Foreign key in profile table named as user_Pid
     private Users user;  // One-to-One with User
 

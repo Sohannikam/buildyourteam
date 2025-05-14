@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import buildteam.Dao.ProfileDao;
 import buildteam.Dao.ProfileImageDao;
+import buildteam.Dao.UserDao;
 import buildteam.Model.Profile;
 import buildteam.Model.Users;
 import buildteam.Service.ProfileService;
@@ -33,6 +34,9 @@ public class ImageController {
 	private ProfileImageDao profileImageDao;
     @Autowired
     private ProfileDao profileDAO;
+    
+    @Autowired
+    private UserDao userDao;
     
 
     @PostMapping(value="/uploadImage", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -80,7 +84,29 @@ public class ImageController {
     @GetMapping(value = "/displayImage", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<?> displayProfilePicture(HttpSession session) {
+
         Users user = (Users) session.getAttribute("user");
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Profile profile = profileDAO.findByUser(user);
+
+        if (profile != null && profile.getProfilePicture() != null) {
+            String base64Image = Base64.getEncoder().encodeToString(profile.getProfilePicture());
+            return ResponseEntity.ok("{\"image\":\"" + base64Image + "\"}");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"image\": null}");
+        }
+    }
+    
+    
+    @GetMapping(value = "/displayImageforotheruser", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> displayProfilePictureForOtherUser(@RequestParam("userId") int userId,HttpSession session) {
+        Users user = userDao.findUserById(userId); // You must have userService injected
+
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

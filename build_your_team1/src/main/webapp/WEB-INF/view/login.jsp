@@ -90,8 +90,8 @@
 
 								</div>
 								<div class="d-flex justify-content-end form-group">
-									<a href="${pageContext.request.contextPath}/forgotpass"
-										class="btn btn-outline-primary me-3">Forgot Password</a> <a
+									 <%-- <a href="${pageContext.request.contextPath}/forgotpass"
+										class="btn btn-outline-primary me-3">Forgot Password</a> --%>  <a
 										href="${pageContext.request.contextPath}/Signup"
 										class="btn btn-outline-primary">Create an Account</a>
 								</div>

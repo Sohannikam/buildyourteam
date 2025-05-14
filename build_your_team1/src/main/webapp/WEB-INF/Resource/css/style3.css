@@ -17,6 +17,11 @@
 	z-index: 1000;
 }
 
+#chatMessages {
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
 .modal.active {
 	display: block;
 }
@@ -104,6 +109,25 @@
 }
 
 .back-btn1:hover {
+    background-color: #0056b3;
+}
+
+.back-btn14 {
+  position: absolute;
+  top: 121px;
+  right: 20px;
+  background-color: #007bff;
+  color: white;
+  border:none;
+  padding:10px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius:5px;
+  transition:
+all 0.3s ease-in-out;
+}
+
+.back-btn14:hover {
     background-color: #0056b3;
 }
 
@@ -219,6 +243,20 @@
   width: auto;
 }
 
+ .send-request-btn5 {
+	background-color: lightgreen;
+  color: black;
+  border: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 20px;
+  top: 10px;
+  right: 10px;
+  z-index: 0;
+  width: auto;
+}
+
 .send-request-btn12 {
 	background-color: lightgreen;
   color: black;
@@ -256,6 +294,7 @@
 	display: block;
 }
 
+
 /* Modal Header */
 .modal-header1 {
 	display: flex;
@@ -276,10 +315,16 @@
 }
 
 /* Labels */
+
+.modal-content1{
+	overflow: visible !important;
+    height: auto !important;
+}
 .modal-content1 label {
 	display: block;
 	margin-top: 10px;
 	font-weight: bold;
+	
 }
 
 /* Inputs & Select */
@@ -291,6 +336,7 @@
 	border: 1px solid #ccc;
 	border-radius: 5px;
 }
+
 
 
 
@@ -356,6 +402,136 @@ right: 18%;
 .NewBtn:hover {
     background-color: #45a049;
 }
+
+/*code to handle model for messaging purpose*/
+/* Modal base styles */
+    .modal20 {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        width: 350px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        font-family: Arial, sans-serif;
+        z-index: 1000;
+    }
+
+    /* Header Styling */
+    .modal20-header {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #ccc;
+        padding: 10px;
+        background: white;
+    }
+
+    .modal-profile-pic {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .modal20-header h3 {
+        flex-grow: 1;
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .close {
+        cursor: pointer;
+        font-size: 20px;
+        color: red;
+    }
+
+    /* Chat Body Styling */
+    .modal20-body {
+        background: #f0f0f0; /* WhatsApp-like grey chat area */
+        padding: 10px;
+        height: 250px;
+        overflow-y: auto;
+    }
+
+    #chatMessages {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Footer (Input and Send Button) */
+    .modal20-footer {
+        display: flex;
+        padding: 10px;
+        background: white;
+        border-top: 1px solid #ccc;
+    }
+
+    #messageInput {
+        flex-grow: 1;
+        border: none;
+        padding: 8px;
+        border-radius: 5px;
+        font-size: 14px;
+        outline: none;
+        resize: none;
+        height: 40px;
+    }
+
+    .send-btn20 {
+        background: #25D366; /* WhatsApp Green */
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        margin-left: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .send-btn20:hover {
+        background: #1ebe5d;
+    }
+    
+        .file-upload-label {
+        font-size: 20px;
+        cursor: pointer;
+        color: #25D366; /* WhatsApp Green */
+        margin-right: 12px;
+        margin-top: 4px;
+    }
+
+    .file-upload-label:hover {
+        color: #1ebe5d;
+    }
+
+    .file-preview {
+        font-size: 12px;
+        color: #333;
+        margin-right: 10px;
+    }
+    
+  /*code to show messages */
+  
+  /* Style for sent messages (messages from the logged-in user) */
+.sent-message {
+    background-color: #d1f7d6; /* Light green background for sent messages */
+    text-align: right; /* Align the message text to the right */
+    margin: 5px 0; /* Add margin for spacing between messages */
+    padding: 10px; /* Add padding inside the message box */
+    border-radius: 15px; /* Round the corners */
+}
+
+/* Style for received messages (messages from the other user) */
+.received-message {
+    background-color: #f1f1f1; /* Light gray background for received messages */
+    text-align: left; /* Align the message text to the left */
+    margin: 5px 0; /* Add margin for spacing between messages */
+    padding: 10px; /* Add padding inside the message box */
+    border-radius: 15px; /* Round the corners */
+}
+
+
 
 
 /* Responsive Design */

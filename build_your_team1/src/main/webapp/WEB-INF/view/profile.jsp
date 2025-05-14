@@ -117,6 +117,16 @@ display:none;
 
 }
 
+.education-item {
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	padding: 10px;
+	margin: 10px 0;
+	background-color: white;
+	width: 100%;
+	height: auto;
+}
+
 
 </style>
 
@@ -160,10 +170,10 @@ display:none;
 
 			<!-- User Info Section -->
 			<div class="user-info">
-				<h2>John Doe</h2>
-				<p>Email: johndoe@example.com</p>
-				<p>⭐ Ratings: 4.8/5</p>
-				<p>📍 Address: New York, USA</p>
+				<h2>Name: ${user.name}</h2>
+				<p>Email: ${user.email}</p>
+				
+				<p>📍 Address: ${user.city}, ${user.state}</p>
 			</div>
 
 			<!-- Edit Profile Icon -->
@@ -218,8 +228,6 @@ display:none;
 			</div>
 
 
-
-
 			<!-- Certifications Section -->
 			<div class="section">
 				<h3>Certifications</h3>
@@ -249,20 +257,25 @@ display:none;
 					Add Education</button>
 				<div class="form-section" id="education-form">
 					<label>Education Level:</label> <select name="educationLevel">
-						<option value="10th">10th</option>
-						<option value="12th">12th</option>
-						<option value="Graduation">Graduation</option>
-						<option value="Post Graduation">Post Graduation</option>
+						<option value="TENTH" data-enum="TENTH">10th</option>
+						<option value="TWELFTH" data-enum="TWELFTH">12th</option>
+						<option value="GRADUATION" data-enum="GRADUATION">Graduation</option>
+						<option value="POST_GRADUATION" data-enum="POST_GRADUATION">Post Graduation</option>
 					</select> <label>Status:</label> <select name="educationStatus">
 						<option value="Completed">Completed</option>
 						<option value="Pursuing">Pursuing</option>
 					</select> <input type="number" name="percentage" placeholder="Percentage">
 					<input type="number" name="passingYear" placeholder="Passing Year">
+					<input type="text" name="Branch" placeholder="Branch">
 
-					<button class="add-btn1" onclick="addEducation()">Add
+					<button class="add-btn1" id="addEducationBtn">Add
 						Education</button>
 
 				</div>
+				
+				
+				<!-- Display Education -->
+				<div id="Educationsection"></div>
 			</div>
 
 		</div>
@@ -279,18 +292,22 @@ display:none;
 			<button class="close-btn" onclick="closeEditProfile()">✖</button>
 		</div>
 		<div class="modal-content">
-			<label>Name:</label> <input type="text" id="editName"
-				placeholder="Enter Name"> <label>Email:</label> <input
-				type="email" id="editEmail" placeholder="Enter Email"> <label>Mobile
+			<label>Name:</label>
+			 <input type="text" id="editName"
+				placeholder="Enter Name" value="${user.name != null ? user.name : ''}">
+				 <label>Email:</label> <input
+				type="email" id="editEmail" placeholder="Enter Email" value="${user.email != null ? user.email : ''}"> 
+				<label>Mobile
 				Number:</label> <input type="text" id="editMobile"
-				placeholder="Enter Mobile Number"> <label>Gender:</label> <select
+				placeholder="Enter Mobile Number" value="${user.phone != null ? user.phone : ''}">
+				 <label>Gender:</label> <select
 				id="editGender">
 				<option value="">Select Gender</option>
 				<option value="Male">Male</option>
 				<option value="Female">Female</option>
 				<option value="Other">Other</option>
 			</select> <label>State:</label> <select id="state">
-				<option>Select State</option>
+				<option >Select State</option>
 				<option value="Maharashtra">Maharashtra</option>
 				<option value="Karnataka">Karnataka</option>
 				<option value="Delhi">Delhi</option>
@@ -299,10 +316,10 @@ display:none;
 				<option value="Uttar Pradesh">Uttar Pradesh</option>
 				<option value="West Bengal">West Bengal</option>
 			</select> <label>City:</label> <select id="city">
-				<option>Select City</option>
+				<option value="${user.city != null ? user.city : ''}">Select City</option>
 			</select>
 
-			<button class="save-btn">Save Changes</button>
+			<button class="save-btn" id="saveProfileBtn">Save Changes</button>
 		</div>
 	</div>
 

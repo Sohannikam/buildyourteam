@@ -2,7 +2,11 @@ package buildteam.Dao;
 
 import org.hibernate.query.Query;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -12,6 +16,7 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import buildteam.Model.Message;
 import buildteam.Model.Request;
 import buildteam.Model.Users;
 
@@ -94,57 +99,39 @@ public class UserDao {
 
 	        Session session = hbt.getSessionFactory().openSession();
 	        
-	        // First query to get users excluding the logged-in user
-	        List<Users> users = session.createQuery(
-	            "SELECT u FROM Users u " +
-	            "JOIN FETCH u.profile p " +
-	            "WHERE u.id != :userId " +
-	            "ORDER BY u.id", 
-	            Users.class)
-	            .setParameter("userId", loggedInUserId)
-	            .getResultList();
+	        try {
+	            // Step 1: Fetch users (excluding the logged-in user)
+	            List<Users> users = session.createQuery(
+	                "SELECT DISTINCT u FROM Users u " +
+	                "JOIN FETCH u.profile p " +
+	                "LEFT JOIN FETCH p.skills " +
+	                "WHERE u.id != :userId", Users.class)
+	                .setParameter("userId", loggedInUserId)
+	                .getResultList();
 
-	        // Close session after fetching users
-	        session.close();
+	            // Step 2: Fetch requests where logged-in user is the receiver
+	            List<Request> requests = session.createQuery(
+	                "FROM Request r WHERE r.receiver.id = :userId", Request.class)
+	                .setParameter("userId", loggedInUserId)
+	                .getResultList();
 
-	        // Load sent requests and skills after fetching users
-	        loadSentRequestsAndSkills(users, loggedInUserId);
+	            // Step 3: Extract sender IDs from requests
+	            Set<Integer> requestSenders = requests.stream().map(r->r.getSender().getId()).collect(Collectors.toSet());
 
-	     
-	        			
-	    	return users;
-	        
-	    
-	        
-	         // If count is greater than 0, phone exists
-	   
-	}
-	
-	
-	private void loadSentRequestsAndSkills(List<Users> users, int loggedInUserId) {
-	    // Open session again to fetch sent requests and skills
-	    Session session = sessionFactory.openSession();
+	            // Step 4: Sort users (priority to users who sent a request)
+	            users.sort(Comparator.comparingInt(u -> requestSenders.contains(u.getId()) ? 0 : 1));
+	            
+	         // DEBUG: Print sorted users before returning
+	            System.out.println("Sorted Users:");
+	            users.forEach(u -> System.out.println("User: " + u.getId() + " - " + u.getName()));
 
-	    for (Users user : users) {
-	        // Fetch sent requests for each user
-	        List<Request> sentRequests = session.createQuery(
-	            "SELECT r FROM Request r WHERE r.sender.id = :senderId", 
-	            Request.class)
-	            .setParameter("senderId", user.getId())
-	            .getResultList();
 
-	        // Set the sent requests for the user
-	        user.setSentRequests(sentRequests);
-
-	        // Fetch and initialize skills for the profile of each user
-	        if (user.getProfile() != null) {
-	            Hibernate.initialize(user.getProfile().getSkills());
+	            return users;
+	        } finally {
+	            session.close();
 	        }
-	    }
-
-	    // Close session after loading sent requests and skills
-	    session.close();
 	}
+	
 
 	
 //    List<Users> user = session.createQuery("SELECT DISTINCT u FROM Users u JOIN FETCH u.profile p LEFT JOIN FETCH p.skills", Users.class)
@@ -169,6 +156,21 @@ public class UserDao {
             e.printStackTrace();
             return null;
         }
+	}
+
+	public Users getUserById(int senderId) {
+		// TODO Auto-generated method stub
+		
+		try {
+			
+            Session session = hbt.getSessionFactory().openSession();
+					
+			return session.get(Users.class,senderId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
 	}	
 
 }

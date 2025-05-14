@@ -1,6 +1,7 @@
 package buildteam.Dao;
 
 import buildteam.Model.Request;
+
 import buildteam.Model.Users;
 import buildteam.Model.RequestStatus;
 import org.hibernate.Session;
@@ -115,6 +116,15 @@ public class RequestDao {
 	    Session session = sessionFactory.openSession();
 	    Request request = session.get(Request.class, requestId);
 	    int receiverId = request.getSender().getId(); // Assuming you have a reference to receiver in Request entity
+	    session.close();
+	    return receiverId;
+	}
+	
+	public int getIdifReciveridisLoginUser(int requestId) {
+		System.out.println("insde of getIdifReciveridisLoginUser ");
+	    Session session = sessionFactory.openSession();
+	    Request request = session.get(Request.class, requestId);
+	    int receiverId = request.getReceiver().getId(); // Assuming you have a reference to receiver in Request entity
 	    session.close();
 	    return receiverId;
 	}

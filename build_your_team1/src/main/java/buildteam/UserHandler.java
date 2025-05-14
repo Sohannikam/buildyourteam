@@ -86,7 +86,18 @@ public class UserHandler {
 		//Handle user login
 		@RequestMapping(value="/Login",method = RequestMethod.POST)
 		public String loginuser(@ModelAttribute Users use,Model m,RedirectAttributes redirectAttributes,HttpSession session) {
+			System.out.println("inside loginuser method");
 		
+			 // ✅ Get the updated user from the session
+//	        Users sessionUser = (Users) session.getAttribute("user08");
+//
+//	        if (sessionUser != null) {
+//	            System.out.println("Using updated user from session: " + sessionUser.getEmail());
+//	            use.setEmail(sessionUser.getEmail()); // ✅ Use the updated email
+//	        } else {
+//	            System.out.println("No user found in session.");
+//	        }
+
 			if (!ud.doesEmailExist(use.getEmail()))  {
 		            m.addAttribute("message", "Email does not exists");
 		            m.addAttribute("alertType", "danger");
@@ -106,7 +117,7 @@ public class UserHandler {
 					session.setAttribute("user", user);
 					session.setAttribute("UserId", user.getId());
 				
-			        return "forward:dashboard";
+			        return "redirect:dashboard";
 				}
 				else 
 					{

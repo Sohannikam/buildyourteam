@@ -12,6 +12,62 @@
     <link href="<c:url value='/Resource/css/Style4.css' />" rel="stylesheet">
     <link href="<c:url value='/Resource/css/style3.css' />" rel="stylesheet">
     
+      <style>
+ 
+
+
+.reject-btn1 {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.button-container1 {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    color: black;
+  border: none;
+  
+  font-size: 1rem;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 0;
+  width: auto;
+}
+
+
+
+
+.reject-btn1:hover {
+    background-color: rgb(240, 60, 60);
+}
+
+
+.modal40 {
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+.modal40-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 20px;
+  width: 56%;
+  border-radius: 10px;
+}
+
+   	 
+    </style>
+    
 </head>
 <body>
 
@@ -27,11 +83,9 @@
       <!-- Small Navigation Tabs -->
         <ul class="networknav nav nav-tabs justify-content-center w-100" id="network-tabs">
             <li class="nav-item flex-fill">
-                <a class="nav-link active text-center" id="followers1" href="#" data-section="followers">Followers</a>
+                <a class="nav-link text-center" id="followers1" href="#" data-section="followers">Followers</a>
             </li>
-            <li class="nav-item flex-fill">
-                <a class="nav-link text-center" id="following1" href="#" data-section="following">Following</a>
-            </li>
+         
             <li class="nav-item flex-fill">
                 <a class="nav-link text-center" id="pending1" href="#" data-section="pending">Pending Requests</a>
             </li>
@@ -42,66 +96,69 @@
                 <!-- Card Container -->
     <div class="main-content">
     	
-
-        <!-- Sample Card for Demonstration -->
-        <div class="user-card">
-            <img src="<c:url value='' />" alt="Profile Picture" class="profile-pic">
-            
-            <div class="user-info">
-                <h3>John Doe</h3>
-                <p>Skills: Java, Spring, Hibernate</p>
-                <p class="user-about">About: Passionate developer looking for a team.</p>
-                <button class="send-request-btn" onclick="sendRequest('John Doe')">Send Request</button>
-           </div>
-        </div>
-        
+<!--         show the followers here
+ -->        
          <div id="followers" class="tab-content">
          <h1>this is followers tab</h1>
-                <c:forEach var="follower" items="${followersList}">
-                    <div class="user-card">
-                        <img src="<c:url value='/Resource/images/${follower.profilePic}' />" alt="Profile Picture" class="profile-pic">
-                        <div class="user-info">
-                            <h3>${follower.name}</h3>
-                            <p>Skills: ${follower.skills}</p>
-                            <p class="user-about">About: ${follower.about}</p>
-                        </div>
-                    </div>
-                </c:forEach>
+             <div id="user-container1"></div>  <!-- This is where cards will be appended -->
+         
             </div>
 
-            <div id="following" class="tab-content" style="display: none;">
-                     <h1>this is following tab</h1>
-            
-                <c:forEach var="following" items="${followingList}">
-                    <div class="user-card">
-                        <img src="<c:url value='/Resource/images/${following.profilePic}' />" alt="Profile Picture" class="profile-pic">
-                        <div class="user-info">
-                            <h3>${following.name}</h3>
-                            <p>Skills: ${following.skills}</p>
-                            <p class="user-about">About: ${following.about}</p>
-                        </div>
-                    </div>
-                </c:forEach>
-            </div>
+         
          
             <div id="pending" class="tab-content" style="display: none;">
                      <h1>this is Pending tab</h1>
             
-                <c:forEach var="request" items="${pendingRequestsList}">
-                    <div class="user-card">
-                        <img src="<c:url value='/Resource/images/${request.profilePic}' />" alt="Profile Picture" class="profile-pic">
-                        <div class="user-info">
-                            <h3>${request.name}</h3>
-                            <p>Skills: ${request.skills}</p>
-                            <p class="user-about">About: ${request.about}</p>
-                        </div>
-                    </div>
-                </c:forEach>
+                            <div id="user-container4"></div>  <!-- This is where cards will be appended -->
+
             </div>
         
     </div>
         </div>
+        
+                      <!-- Modal for User Profile -->
+<div id="userProfileModal00" class="modal40" style="display:none;">
+  <div class="modal40-content">
+    <span class="close" onclick="closeUserProfileModal()">&times;</span>
+    <div id="userProfileContent">
+      <!-- User profile (profileforotheruser.jsp content) will load here dynamically -->
+    </div>
+  </div>
+</div>  
+        
+        
+           
+        <!-- Messaging Modal -->
+<!-- WhatsApp-Style Chat Modal -->
 
+<div id="messageModal" class="modal20" data-receiver-id="">
+    <div class="modal20-header">
+        <img id="messageUserImg" src="" alt="User Image" class="modal-profile-pic">
+        <h3 id="messageUserName"></h3>
+        <span class="close" onclick="$('#messageModal').hide()">&times;</span>
+    </div>
+
+    <div class="modal20-body">
+        <div id="chatMessages">
+            <!-- Chat messages will be dynamically added here -->
+        </div>
+    </div>
+
+    <div class="modal20-footer">
+    
+     <label for="fileInput" class="file-upload-label">
+           📁
+        </label>
+        <input type="file" id="fileInput" style="display: none;" onchange="previewFile()">
+
+        <!-- File Preview -->
+        <span id="filePreview" class="file-preview"></span>
+        
+        <textarea id="messageInput" placeholder="Type a message..."></textarea>
+        <button class="send-btn20" id="sendBtn0" >Send</button>
+    </div>
+</div>
+        
     </div>
     
   

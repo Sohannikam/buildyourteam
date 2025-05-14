@@ -116,11 +116,59 @@ header {
     width: 90%;
     max-width: 1200px;
     padding: 20px;
+   
 }
 
 .card:hover {
     transform: scale(1.05);
 }
+
+
+.blog-body {
+  overflow:auto;
+  position: relative;
+}
+
+.blog-img {
+  float: left;
+  width: 300px;
+  height: auto;
+  margin-right: 38px;
+  margin-bottom: 31px;
+  border-radius: 8px;
+}
+
+.blog-desc {
+  
+  padding: 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+    max-height: 600px;
+  overflow-y: auto;
+}
+
+.blog-desc::-webkit-scrollbar {
+  width: 6px;
+}
+.blog-desc::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+
+.blog-title {
+  border: 2px solid #dee2e6;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: #f8f9fa; /* Light background */
+  font-weight: bold;
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+
+
+
 
 .card p {
     font-size: 1.1rem;

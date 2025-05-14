@@ -47,15 +47,22 @@ textarea {
 <body>
 
 	<div class="container4">
+	
+	 <!-- Back to Dashboard Button -->
+    <button id="back-to-dashboard-6" class="back-btn14">
+    Back to Dashboard
+</button>
 
 		<div class="container5">
 			<h2 class="text-center mb-4">Create a New Blog</h2>
 
-			<form action="CreateBlogServlet1" method="post">
+			
 				<!-- Title -->
 				<div class="mb-3">
 					<label for="title" class="form-label">Title:</label> <input
 						type="text" id="title" name="title" class="form-control" required>
+						    <button type="button" id="emoji-btn-title" style="position: absolute; right: 8px; bottom: 8px; background: transparent; border: none; font-size: 24px;">😊</button>
+						
 				</div>
 
 				<!-- Description -->
@@ -63,18 +70,10 @@ textarea {
 					<label for="description" class="form-label">Description:</label>
 					<textarea id="description" name="description" rows="6"
 						class="form-control" required></textarea>
+<!-- 						    <button type="button" id="emoji-btn" style="position: absolute; bottom: 8px; right: 8px; border: none; background: transparent; font-size: 24px;">😊</button>
+ -->						
 				</div>
 
-				<!-- Category -->
-				<div class="mb-3">
-					<label for="category" class="form-label">Category:</label> <select
-						id="category" name="category" class="form-select" required>
-						<option value="Technology">Technology</option>
-						<option value="Sport">Sport</option>
-						<option value="Travel">Travel</option>
-						<option value="Film">Film</option>
-					</select>
-				</div><br>
 
 				<label for="image"><b>Choose Image:</b></label> 
 				<input type="file"
@@ -85,10 +84,10 @@ textarea {
 
 				<!-- Submit Button -->
 				<div class="text-center">
-					<button type="submit" class="btn btn-primary w-100">Create
+					<button  id ="createBlogBtn" class="btn btn-primary w-100" >Create
 						Blog</button>
 				</div>
-			</form>
+			
 		</div>
 
 	</div>

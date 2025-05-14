@@ -65,6 +65,21 @@
     margin-top: 100px;
 }
 
+.profile-container00 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+    margin-bottom: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 0px;
+}
+
 /* Profile Header (Aligns Image + User Info in One Line) */
 .profile-header {
     display: flex;

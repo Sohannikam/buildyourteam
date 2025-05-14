@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import buildteam.Model.Skill;
 import buildteam.Dao.SkillDao;
+import buildteam.Dao.UserDao;
 import buildteam.Model.Profile;
 import buildteam.Model.Users;
 import buildteam.Service.SkillService;
@@ -19,7 +21,9 @@ import buildteam.Service.ProfileService;
 import javax.servlet.http.HttpSession;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 
@@ -36,6 +40,9 @@ public class SkillController {
     
     @Autowired
     private SkillDao skillDao;
+    
+    @Autowired
+    private UserDao userDao;
     
     @GetMapping(value = "/getSkills", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -96,6 +103,29 @@ public class SkillController {
     	catch (Exception e) {
     		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
 		}
+    }
+    
+    
+    @ResponseBody
+    @GetMapping(value = "/getSkillsForOtherUser", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Skill>> getSkillsForOtherUser(@RequestParam("userId") int userId,HttpSession session,Model m) {
+        System.out.println("Fetching skills for userId: " + userId);
+
+        Users user = userDao.findUserById(userId); // You must have userService injected
+        m.addAttribute("otheruser",user);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        Profile profile = profileService.getProfileByUser(user);
+        if (profile == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        List<Skill> skills = skillDao.findByProfile(profile);
+     
+
+        return ResponseEntity.ok(skills);
     }
     
 }

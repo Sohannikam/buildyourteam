@@ -1,12 +1,35 @@
 package buildteam.Model;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "education")
 public class Education {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Eid;
+    
+    private String status; // Completed, Pursuing
+    private double percentage;
+    private int passingYear;
+    private String Branch;
+
+    public String getBranch() {
+		return Branch;
+	}
+
+	public void setBranch(String branch) {
+		Branch = branch;
+	}
+
+	@ManyToOne
+    @JoinColumn(name = "profile_id", referencedColumnName = "Pid")
+    @JsonIgnore
+    private Profile profile;
+
+    // Getters and Setters
 
     @Enumerated(EnumType.STRING) // This tells Hibernate to store it as a String in the database
     private EducationLevel educationLevel; 
@@ -19,28 +42,8 @@ public class Education {
 		Eid = eid;
 	}
 
-	public Education() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
-	@Override
-	public String toString() {
-		return "Education [Eid=" + Eid + ", educationLevel=" + educationLevel + ", status=" + status + ", percentage="
-				+ percentage + ", passingYear=" + passingYear + ", profile=" + profile + "]";
-	}
-
-	public Education(Long eid, EducationLevel educationLevel, String status, int percentage, int passingYear,
-			Profile profile) {
-		super();
-		Eid = eid;
-		this.educationLevel = educationLevel;
-		this.status = status;
-		this.percentage = percentage;
-		this.passingYear = passingYear;
-		this.profile = profile;
-	}
-
+	
 	public EducationLevel getEducationLevel() {
 		return educationLevel;
 	}
@@ -57,12 +60,12 @@ public class Education {
 		this.status = status;
 	}
 
-	public int getPercentage() {
+	public double getPercentage() {
 		return percentage;
 	}
 
-	public void setPercentage(int percentage) {
-		this.percentage = percentage;
+	public void setPercentage(double percentage2) {
+		this.percentage = percentage2;
 	}
 
 	public int getPassingYear() {
@@ -80,15 +83,37 @@ public class Education {
 	public void setProfile(Profile profile) {
 		this.profile = profile;
 	}
+		
 
-	private String status; // Completed, Pursuing
-    private int percentage;
-    private int passingYear;
+	@Override
+	public String toString() {
+		return "Education [Eid=" + Eid + ", status=" + status + ", percentage=" + percentage + ", passingYear="
+				+ passingYear + ", Branch=" + Branch + ", profile=" + profile + ", educationLevel=" + educationLevel
+				+ "]";
+	}
 
-    @ManyToOne
-    @JoinColumn(name = "profile_id", referencedColumnName = "Pid")
-    private Profile profile;
+	public Education(Long eid, String status, double percentage, int passingYear, String branch, Profile profile,
+			EducationLevel educationLevel) {
+		super();
+		Eid = eid;
+		this.status = status;
+		this.percentage = percentage;
+		this.passingYear = passingYear;
+		Branch = branch;
+		this.profile = profile;
+		this.educationLevel = educationLevel;
+	}
 
-    // Getters and Setters
+	public Education() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	 @JsonGetter("formattedEducationLevel")
+	    public String getFormattedEducationLevel() {
+	        return educationLevel.getDisplayName(); // Calls the method from Enum
+	    }
+
+	
 }
 

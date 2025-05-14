@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import buildteam.Dao.ProjectDao;
 import buildteam.Dao.SkillDao;
+import buildteam.Dao.UserDao;
 import buildteam.Model.Profile;
 import buildteam.Model.Project;
 import buildteam.Model.Skill;
@@ -36,6 +37,8 @@ public class ProjectController {
 	    
 	    @Autowired
 	    private ProjectDao projectDao;
+	    
+	    @Autowired UserDao userDao;
 	    
 	   
 	    
@@ -67,6 +70,44 @@ public class ProjectController {
 	            // Fetch updated skill list
 	            List<Project> updatedProectList = projectDao.findByProfile(profile);
 	        
+//	        System.out.println(updatedProectList);
+	        return ResponseEntity.ok(updatedProectList);
+	    }
+	    	catch (Exception e) {
+	    		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+			}
+	    }
+	    
+	    @GetMapping(value = "/getProjectsForOtherUsers", produces = MediaType.APPLICATION_JSON_VALUE)
+	    @ResponseBody
+	    public ResponseEntity<List<Project>> getProjectsForOtherUser( @RequestParam("userId") int userId,HttpSession session) {
+	    	try {
+	        // Retrieve the logged-in user from session
+	    	
+	    	 System.out.println("Inside GetProjectForOhterUsers Controller");
+	    	 
+	    	 
+	    	
+	        Users user = userDao.findUserById(userId); // You must have userService injected
+	        System.out.println(user);
+	        if (user == null) {
+	        	System.out.println("inside user==null");
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	        }
+
+	        // Get Profile based on logged-in user
+	        Profile profile = profileService.getProfileByUser(user);
+	        if (profile == null) {
+	        	 System.out.println("inside profile==null");
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	           
+	        }
+	            
+	            // Fetch updated skill list
+	            List<Project> updatedProectList = projectDao.findByProfile(profile);
+	            
+	            System.out.println("updated project list is"+updatedProectList);
+	            
 //	        System.out.println(updatedProectList);
 	        return ResponseEntity.ok(updatedProectList);
 	    }

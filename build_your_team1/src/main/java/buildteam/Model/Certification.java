@@ -65,9 +65,11 @@ public class Certification {
 
 	@Override
 	public String toString() {
-		return "Certification [Cid=" + Cid + ", filePath=" + filePath + ", profile=" + profile + ", CertifcateName="
-				+ CertifcateName + "]";
+	    return "Certification [Cid=" + Cid + ", filePath=" + filePath +
+	           ", profileId=" + (profile != null ? profile.getPid() : "null") +
+	           ", CertifcateName=" + CertifcateName + "]";
 	}
+
 
     
 }

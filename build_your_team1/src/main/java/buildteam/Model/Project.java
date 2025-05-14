@@ -58,7 +58,7 @@ public class Project {
     @Override
 	public String toString() {
 		return "Project [Proid=" + Proid + ", projectName=" + projectName + ", description=" + description
-				+ ", profile=" + profile + "]";
+				+"]";
 	}
     
     public Project(Long proid, String projectName, String description, Profile profile) {

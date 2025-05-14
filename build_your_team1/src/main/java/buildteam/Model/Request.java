@@ -23,7 +23,6 @@ public class Request {
 	    @ManyToOne
 	    @JoinColumn(name = "receiver_id", nullable = false)
 	    @JsonIgnore
-	     
 	    private Users receiver;
 
 	    public int getId() {

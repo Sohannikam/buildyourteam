@@ -5,6 +5,8 @@ import buildteam.Dao.UserDao;
 import buildteam.Model.Request;
 import buildteam.Model.Users;
 import buildteam.Model.RequestStatus;
+
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpSession;
 
 @RestController
 public class RequestController {
@@ -30,6 +34,8 @@ public class RequestController {
     public ResponseEntity<?> sendRequest(@SessionAttribute("UserId") int senderId, @PathVariable int receiverId) {
     	
     	System.out.println("inside send request");
+    	System.out.println("Sender id is"+senderId);
+    	System.out.println("Reciever id is"+receiverId);
         Users sender = userDao.findUserById(senderId);
         Users receiver = userDao.findUserById(receiverId);
 
@@ -45,6 +51,8 @@ public class RequestController {
    
     @GetMapping(value = "/pending", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PendingRequestDto>> getPendingRequests(@SessionAttribute("UserId") int userId) {
+    	
+    	System.out.println("user id is for pending requests is "+userId);
     	
     	
     	System.out.println("Fetching Pending Requests...");
@@ -108,12 +116,19 @@ public class RequestController {
     }
     
     @PutMapping(value = "/Reject/{requestId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateRequestStatusReject(@PathVariable int requestId) {
+    public ResponseEntity<?> updateRequestStatusReject(@PathVariable int requestId,HttpSession session) {
     	
+    	int loggedInUserId = (int) session.getAttribute("UserId");
     	System.out.println("request id is"+requestId);
     	System.out.println("inside to check request status");
         
     	int Userid=requestDao.getReceiverIdFromRequestId(requestId);
+    	
+    	if(Userid==loggedInUserId)
+    	{
+    		Userid=requestDao.getIdifReciveridisLoginUser(requestId);
+    		System.out.println("inside of userid is loggedinuserid");
+    	}
     	System.out.println("User id for sender is"+Userid);
         requestDao.updateRequestStatusForReject(requestId);
      // Return JSON with userId to handle UI dynamically

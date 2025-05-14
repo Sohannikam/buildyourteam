@@ -1,6 +1,7 @@
 package buildteam;
 
 import java.util.Base64;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,7 @@ private ProfileDao profileDao;
 
 
 @GetMapping(value = "/userslist", produces = MediaType.APPLICATION_JSON_VALUE)
+@ResponseBody
     public ResponseEntity<List<UserDTO>> getAllUsersWithSkills(HttpSession session) {
 	
 	System.out.println("inside getalluserswithskllls handler");
@@ -46,6 +48,11 @@ private ProfileDao profileDao;
 
         // Convert Users entity to DTO format to avoid exposing sensitive data
         List<UserDTO> userDTOs = users.stream().map(user -> new UserDTO(user)).collect(Collectors.toList());
+        
+     // DEBUG: Print sorted DTOs
+        System.out.println("Sorted UserDTOs:");
+        userDTOs.forEach(dto -> System.out.println("User: " + dto.getId() + " - " + dto.getName()));
+
 
         return ResponseEntity.ok(userDTOs);
     }
