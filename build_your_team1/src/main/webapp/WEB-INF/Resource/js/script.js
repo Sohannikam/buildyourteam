@@ -1074,13 +1074,13 @@ function getEducaationforotheruser(userId)
         console.log("Inside success of education retrieval");
 
         // Clear the previous education section content
-        $("#Educationsection").empty();
+        $("#Educationsection1").empty();
 
         $.each(response, function(index, education) {
             console.log("Inside success loop of education retrieval");
 
             // Append education details dynamically
-             $("#Educationsection").append(
+             $("#Educationsection1").append(
                     "<div class='education-item'>" +
                     "<div><strong>Level:</strong> " + education.formattedEducationLevel + "</div>" +
                     "<div><strong>Status:</strong> " + education.status + "</div>" +

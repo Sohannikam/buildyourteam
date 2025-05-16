@@ -224,7 +224,7 @@ display:none;
 				
 				
 				<!-- Display Education -->
-				<div id="Educationsection"></div>
+				<div id="Educationsection1"></div>
 			</div>
 
 		</div>
