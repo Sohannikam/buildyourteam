@@ -1,7 +1,7 @@
 # 📚 Project Collaborator Hub
 
 A web-based platform designed to help final-year students find ideal project partners based on skills, interests, and compatibility. 
-The system enables real-time messaging, profile creation, project posting, and structured collaboration.
+The system enables real-time messaging,connecting to Users, profile creation, project posting, and structured collaboration.
 ---
 ## 💡 Features
 
@@ -35,9 +35,9 @@ The system enables real-time messaging, profile creation, project posting, and s
 
 > ```
 
-> ![Login Page](screenshots/Login.png)
-> ![Signup Page](screenshots/Signup.png)
-> ![Dashboard](screenshots/Posts.png)
+> ![Login Page](build_your_team1/screenshots/Login.png)
+> ![Signup Page](build_your_team1/screenshots/Signup.png)
+> ![Dashboard](build_your_team1/screenshots/Posts.png)
 > ![Profile Page](screenshots/Profile.png)
 > ![Edit Profile Page](screenshots/EditProfile.png)
 > ![Find User Page](screenshots/FindUser.png)
