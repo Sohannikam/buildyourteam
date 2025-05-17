@@ -40,7 +40,7 @@ The system enables real-time messaging,connecting to Users, profile creation, pr
 > ![Dashboard](build_your_team1/screenshots/Posts.png)
 > ![Profile Page](build_your_team1/screenshots/Profile.png)
 > ![Edit Profile Page](build_your_team1/screenshots/EditProfile.png)
-> ![Find User Page](build_your_team1/screenshots/FindUser.png)
+> ![Find User Page](build_your_team1/screenshots/FindUsers.png)
 > ![Message Page](build_your_team1/screenshots/Messaging.png)
 > ![MyNetwork Page](build_your_team1/screenshots/MyNetwork(2).png)
 > ![Create Post Page](build_your_team1/screenshots/CreatBlog.png)
